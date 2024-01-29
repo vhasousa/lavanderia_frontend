@@ -1,0 +1,81 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #4FBBFF; /* Cor de fundo da página */
+    margin: 0; /* Remove a margem padrão */
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 2rem;
+    display: flex; /* Adiciona flexbox para facilitar o alinhamento */
+    flex-direction: column; /* Organiza os itens em coluna */
+    align-items: center; /* Centraliza os itens horizontalmente */
+    min-height: 100vh; /* Garante que a container ocupe pelo menos a altura total da tela */
+    justify-content: center; /* Centraliza os itens verticalmente */
+}
+
+main {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para efeito de elevação */
+    width: 100%; /* Largura do main */
+    max-width: 500px; /* Largura máxima para garantir que não fique muito largo em telas grandes */
+}
+
+button {
+    background-color: #ffcc00;
+    color: black;
+    border: 0;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e6b800;
+}
+
+footer {
+    background-color: #005a9c;
+    color: white;
+    text-align: center;
+    padding: 1rem;
+    width: 100%; /* Garante que o footer ocupe a largura total da container */
+}
+
+.service-form {
+    background: #ffffff; /* Define o background do formulário para branco */
+    border-radius: 10px; /* Bordas arredondadas */
+    padding: 20px; /* Padding interno para o formulário */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Opcional: Sombra para efeito de elevação */
+    width: 100%; /* Largura do formulário ajustada para ocupar o espaço disponível */
+    max-width: 500px; /* Largura máxima para garantir que o formulário não fique muito largo */
+    box-sizing: border-box; /* Garante que o padding não adicione largura ao elemento */
+    margin: auto; /* Centraliza o formulário na página */
+}
+
+.service-form input, .service-form select {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.service-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.grid > div {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+}
