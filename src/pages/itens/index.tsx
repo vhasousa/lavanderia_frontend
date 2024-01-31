@@ -2,9 +2,9 @@ import Sidebar from '../../components/Sidebar';
 
 const Itens = () => {
   return (
-    <div style={{ display: 'flex' }}>
+    <div>
       <Sidebar />
-      <div style={{ flex: 1, padding: '20px' }}>
+      <div>
         {/* Conteúdo da página Itens */}
         <h1>Itens</h1>
       </div>

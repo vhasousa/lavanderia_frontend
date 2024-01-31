@@ -1,6 +1,5 @@
-// components/Sidebar.tsx
 import Link from 'next/link';
-import styles from '../styles/Sidebar.module.css';
+import styles from './Sidebar.module.css';
 
 const Sidebar = () => {
   return (

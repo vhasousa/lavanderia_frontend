@@ -1,11 +1,12 @@
-import ServiceList from '@/components/Services';
 import React from 'react';
+
+import ServiceDetails from '../components/ServiceDetails'
 
 const HomePage = () => {
   return (
     <>
-      <h1>Serviços</h1>
-      <ServiceList />
+      <h1>Home page</h1>
+      <ServiceDetails />
     </>
 
   );
