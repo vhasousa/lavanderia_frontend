@@ -1,5 +1,5 @@
 import Sidebar from '../../components/Sidebar';
-import Select from 'react-select'; 
+import Select from 'react-select';
 
 import React, { useState, useEffect } from 'react';
 import { LaundryService, Client, Item } from '../../models';
@@ -15,6 +15,7 @@ const Servicos = () => {
   const [clients, setClients] = useState<SelectOption[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<Array<{ laundry_item_id: string; item_quantity: number }>>([]);
+  const [selectedItemsWithOptions, setSelectedItemsWithOptions] = useState<Array<{ laundry_item_id: string; item_quantity: number; selectedOption: SelectOption | null }>>([]);
   const [formData, setFormData] = useState<LaundryService>({
     estimated_completion_date: '',
     is_weight: false,
@@ -24,15 +25,28 @@ const Servicos = () => {
     items: [],
   });
 
-  const addItem = () => {
-    setSelectedItems(prevItems => [...prevItems, { laundry_item_id: '', item_quantity: 1 }]);
+  // Função para carregar clientes e converter para o formato esperado por react-select
+  const fetchClients = async () => {
+    const response = await fetch('http://localhost:8080/clients');
+    const data: Client[] = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
+    const clientOptions: SelectOption[] = data.map(client => ({
+      value: client.id.toString(), // Garante que o valor seja uma string
+      label: `${client.first_name} ${client.last_name}` // Ajuste conforme necessário
+    }));
+    setClients(clientOptions);
   };
 
-  const updateItem = (index: number, field: 'laundry_item_id' | 'item_quantity', value: string) => {
-    const newItems = [...selectedItems];
+  const fetchItems = async () => {
+    const response = await fetch('http://localhost:8080/items');
+    const data = await response.json();
+    setItems(data);
+  };
 
-    newItems[index] = { ...newItems[index], [field]: value };
-    setSelectedItems(newItems);
+  const addItem = () => {
+    setSelectedItemsWithOptions(prevItems => [
+      ...prevItems,
+      { laundry_item_id: '', item_quantity: 1, selectedOption: null }
+    ]);
   };
 
   const handleQuantityBlur = (index: number, value: string) => {
@@ -42,7 +56,6 @@ const Servicos = () => {
     newItems[index] = { ...newItems[index], item_quantity: isNaN(convertedValue) ? 1 : convertedValue };
     setSelectedItems(newItems);
   };
-
 
   // Função genérica para lidar com mudanças nos inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -70,17 +83,6 @@ const Servicos = () => {
     }));
   };
 
-  // Função para carregar clientes e converter para o formato esperado por react-select
-  const fetchClients = async () => {
-    const response = await fetch('http://localhost:8080/clients');
-    const data: Client[] = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
-    const clientOptions: SelectOption[] = data.map(client => ({
-      value: client.id.toString(), // Garante que o valor seja uma string
-      label: `${client.first_name} ${client.last_name}` // Ajuste conforme necessário
-    }));
-    setClients(clientOptions);
-  };
-
   // Função para lidar com a mudança de seleção do cliente
   const handleClientSelectChange = (selectedOption: SelectOption | null) => {
     setFormData(prev => ({
@@ -89,19 +91,18 @@ const Servicos = () => {
     }));
   };
 
-  const fetchItems = async () => {
-    const response = await fetch('http://localhost:8080/items');
-    const data = await response.json();
-    setItems(data);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const itemsToSend = selectedItemsWithOptions.map(item => ({
+      laundry_item_id: item.selectedOption ? item.selectedOption.value : '',
+      item_quantity: item.item_quantity,
+    }));
+  
     // Certifique-se de que formData contém todos os dados atualizados, incluindo selectedItems
     const finalFormData = {
       ...formData,
-      items: selectedItems // Garante que os itens selecionados estejam incluídos
+      items: itemsToSend
     };
 
     // Verifica se o campo de data e hora está preenchido
@@ -129,33 +130,49 @@ const Servicos = () => {
       // Trate o sucesso do envio
 
       // Limpa o formulário redefinindo o estado de formData para os valores iniciais
-      setFormData({
-        estimated_completion_date: '',
-        is_weight: false,
-        is_piece: false,
-        weight: 0,
-        client_id: '',
-        items: [],
-      });
-
-      // Adicional: Se estiver usando campos de entrada controlados, talvez seja necessário limpar o estado de outros campos, como selectedItems
-      setSelectedItems([]);
+      resetForm();
     } else {
       // Trate o erro
     }
   };
 
+  const handleSelectedItemSelectChange = (index: number, selectedOption: SelectOption | null) => {
+    const newSelectedItemsWithOptions = [...selectedItemsWithOptions];
+    newSelectedItemsWithOptions[index] = {
+      ...newSelectedItemsWithOptions[index],
+      selectedOption
+    };
+    setSelectedItemsWithOptions(newSelectedItemsWithOptions);
+  };
+  
+  const handleItemQuantityChange = (index: number, value: string) => {
+    const newSelectedItemsWithOptions = [...selectedItemsWithOptions];
+    const convertedValue = value === '' ? 1 : parseInt(value, 10);
+    newSelectedItemsWithOptions[index] = {
+      ...newSelectedItemsWithOptions[index],
+      item_quantity: isNaN(convertedValue) ? 1 : convertedValue
+    };
+    setSelectedItemsWithOptions(newSelectedItemsWithOptions);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      estimated_completion_date: '',
+      is_weight: false,
+      is_piece: false,
+      weight: 0,
+      client_id: '',
+      items: [],
+    });
+    setSelectedItems([]);
+    setSelectedItemsWithOptions([]);
+  };
 
   // Carrega clientes e itens na montagem do componente
   useEffect(() => {
     fetchClients();
     fetchItems();
-
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      items: selectedItems
-    }));
-  }, [selectedItems]);
+  }, []);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -164,7 +181,7 @@ const Servicos = () => {
 
       <div style={{ flex: 1, padding: '20px' }}>
         <form onSubmit={handleSubmit} className="service-form">
-        <div>
+          <div>
             <label htmlFor="client_id">Cliente:</label>
             <Select
               id="client_id"
@@ -202,26 +219,29 @@ const Servicos = () => {
           </div>
 
           {
-            selectedItems.map((item, index) => (
+            selectedItemsWithOptions.map((item, index) => (
               <div key={index}>
-                <select name="laundry_item_id" required onChange={e => updateItem(index, 'laundry_item_id', e.target.value)}>
-                  <option value="">Selecione um item</option>
-                  {items.map(it => (
-                    <option key={it.id} value={it.id}>{it.name}</option>
-                  ))}
-                </select>
+                <Select
+                  name={`selected_item_${index}`}
+                  options={items.map(it => ({ value: it.id, label: it.name }))}
+                  onChange={(selectedOption: SelectOption | null) => handleSelectedItemSelectChange(index, selectedOption)}
+                  value={item.selectedOption}
+                  placeholder="Selecione um item"
+                  isClearable
+                  isSearchable
+                />
                 <input
                   type="number"
-                  name="item_quantity"
-                  value={item.item_quantity || ''} // Permite que o valor seja vazio
-                  placeholder="1" // Mostra '1' como valor padrão, mas apenas como placeholder
-                  onChange={e => updateItem(index, 'item_quantity', e.target.value)}
-                  onBlur={e => handleQuantityBlur(index, e.target.value)} // Adiciona um manipulador onBlur
+                  name={`item_quantity_${index}`}
+                  value={item.item_quantity}
+                  placeholder="1"
+                  onChange={e => handleItemQuantityChange(index, e.target.value)}
+                  onBlur={e => handleQuantityBlur(index, e.target.value)}
                 />
-
               </div>
             ))
           }
+
           <button type="button" onClick={addItem}>Adicionar Item</button>
 
 
