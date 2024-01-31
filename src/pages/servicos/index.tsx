@@ -49,6 +49,12 @@ const Servicos = () => {
     ]);
   };
 
+  const removeItem = (indexToRemove: number) => {
+    setSelectedItemsWithOptions(prevItems =>
+      prevItems.filter((item, index) => index !== indexToRemove)
+    );
+  };
+
   const handleQuantityBlur = (index: number, value: string) => {
     const newItems = [...selectedItems];
     // Converte para número ou usa o valor padrão '1' se estiver vazio ou inválido
@@ -98,7 +104,7 @@ const Servicos = () => {
       laundry_item_id: item.selectedOption ? item.selectedOption.value : '',
       item_quantity: item.item_quantity,
     }));
-  
+
     // Certifique-se de que formData contém todos os dados atualizados, incluindo selectedItems
     const finalFormData = {
       ...formData,
@@ -144,7 +150,7 @@ const Servicos = () => {
     };
     setSelectedItemsWithOptions(newSelectedItemsWithOptions);
   };
-  
+
   const handleItemQuantityChange = (index: number, value: string) => {
     const newSelectedItemsWithOptions = [...selectedItemsWithOptions];
     const convertedValue = value === '' ? 1 : parseInt(value, 10);
@@ -238,6 +244,9 @@ const Servicos = () => {
                   onChange={e => handleItemQuantityChange(index, e.target.value)}
                   onBlur={e => handleQuantityBlur(index, e.target.value)}
                 />
+                <button type="button" onClick={() => removeItem(index)} style={{ marginLeft: '10px' }}>
+                  X
+                </button>
               </div>
             ))
           }
