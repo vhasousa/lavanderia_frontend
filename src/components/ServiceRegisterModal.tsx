@@ -1,15 +1,24 @@
-import Sidebar from '../components/Sidebar';
 import Select from 'react-select';
 
 import React, { useState, useEffect } from 'react';
 import { LaundryService, Client, Item } from '../models';
+
+import styles from './ServiceRegisterModal.module.css'
+
+interface ServicesProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onServiceRegistered: () => void;
+}
 
 type SelectOption = {
   value: string;
   label: string;
 };
 
-const ServiceRegister = () => {
+
+const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServiceRegistered }) => {
+
   const [clients, setClients] = useState<SelectOption[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<Array<{ laundry_item_id: string; item_quantity: number }>>([]);
@@ -132,6 +141,7 @@ const ServiceRegister = () => {
     });
     if (response.ok) {
       // Trate o sucesso do envio
+      onServiceRegistered();
 
       // Limpa o formulário redefinindo o estado de formData para os valores iniciais
       resetForm();
@@ -176,87 +186,92 @@ const ServiceRegister = () => {
   useEffect(() => {
     fetchClients();
     fetchItems();
-  }, []);
+  }, [isOpen]);
+
+  if (!isOpen) {
+    return null;
+  }
 
   return (
-    <div>
-      <Sidebar />
-      <h1>Servicos</h1>
+    <div className={styles.serviceRegisterContainer} onClick={onClose}>
+      <div className={styles.serviceRegisterContent} onClick={e => e.stopPropagation()}>
+        <div className={styles.serviceRegisterTitle}>
+          <h1>Cadastrar serviço</h1>
+          <button onClick={onClose} className={styles.close}>X</button>
+        </div>
+        <div className={styles.serviceRegisterFormContainer}>
+          <form onSubmit={handleSubmit} className={styles.serviceRegisterForm}>
+            <div>
+              <label htmlFor="client_id">Cliente:</label>
+              <Select
+                id="client_id"
+                name="client_id"
+                options={clients}
+                onChange={handleClientSelectChange}
+                value={clients.find(option => option.value === formData.client_id)}
+                placeholder="Selecione um cliente"
+                isClearable
+                isSearchable
+              />
+            </div>
 
-      <div>
-        <form onSubmit={handleSubmit} className="service-form">
-          <div>
-            <label htmlFor="client_id">Cliente:</label>
-            <Select
-              id="client_id"
-              name="client_id"
-              options={clients}
-              onChange={handleClientSelectChange}
-              value={clients.find(option => option.value === formData.client_id)}
-              placeholder="Selecione um cliente"
-              isClearable
-              isSearchable
-            />
-          </div>
+            {
+              selectedItemsWithOptions.map((item, index) => (
+                <div key={index} className={styles.itemContent}>
+                  <Select
+                    name={`selected_item_${index}`}
+                    options={items.map(it => ({ value: it.id, label: it.name }))}
+                    onChange={(selectedOption: SelectOption | null) => handleSelectedItemSelectChange(index, selectedOption)}
+                    value={item.selectedOption}
+                    placeholder="Selecione um item"
+                    isClearable
+                    isSearchable
+                  />
+                  <input
+                    type="number"
+                    name={`item_quantity_${index}`}
+                    value={item.item_quantity}
+                    placeholder="1"
+                    onChange={e => handleItemQuantityChange(index, e.target.value)}
+                    onBlur={e => handleQuantityBlur(index, e.target.value)}
+                  />
+                  <button type="button" onClick={() => removeItem(index)}>
+                    X
+                  </button>
+                </div>
+              ))
+            }
 
-          <div>
-            <label htmlFor="estimated_completion_date">Data Estimada de Conclusão:</label>
-            <input type="datetime-local" id="estimated_completion_date" name="estimated_completion_date" required onChange={handleChange} value={formData.estimated_completion_date} />
-          </div>
+            <button type="button" onClick={addItem} className={styles.addItemButton}>+ Adicionar Item</button>
 
-          <div>
-            <label>
-              <input type="radio" name="service_type" value="weight" checked={formData.is_weight} onChange={handleServiceTypeChange} />
-              Por Peso
-            </label>
-            <label>
-              <input type="radio" name="service_type" value="piece" checked={formData.is_piece} onChange={handleServiceTypeChange} />
-              Por Peça
-            </label>
+            <div className={styles.serviceRegisterFormDate}>
+              <label htmlFor="estimated_completion_date">Data Estimada de Conclusão:</label>
+              <input type="datetime-local" id="estimated_completion_date" name="estimated_completion_date" required onChange={handleChange} value={formData.estimated_completion_date} />
+            </div>
 
-            {formData.is_weight && (
-              <div>
-                <label htmlFor="weight">Peso (Kg):</label>
-                <input type="number" id="weight" name="weight" min="0" step="0.01" onChange={handleChange} value={formData.weight} />
-              </div>
-            )}
-          </div>
+            <div className={styles.serviceRegisterType}>
+              <label>
+                <input type="radio" name="service_type" value="weight" checked={formData.is_weight} onChange={handleServiceTypeChange} />
+                Por Peso
+              </label>
+              <label>
+                <input type="radio" name="service_type" value="piece" checked={formData.is_piece} onChange={handleServiceTypeChange} />
+                Por Peça
+              </label>
 
-          {
-            selectedItemsWithOptions.map((item, index) => (
-              <div key={index}>
-                <Select
-                  name={`selected_item_${index}`}
-                  options={items.map(it => ({ value: it.id, label: it.name }))}
-                  onChange={(selectedOption: SelectOption | null) => handleSelectedItemSelectChange(index, selectedOption)}
-                  value={item.selectedOption}
-                  placeholder="Selecione um item"
-                  isClearable
-                  isSearchable
-                />
-                <input
-                  type="number"
-                  name={`item_quantity_${index}`}
-                  value={item.item_quantity}
-                  placeholder="1"
-                  onChange={e => handleItemQuantityChange(index, e.target.value)}
-                  onBlur={e => handleQuantityBlur(index, e.target.value)}
-                />
-                <button type="button" onClick={() => removeItem(index)} style={{ marginLeft: '10px' }}>
-                  X
-                </button>
-              </div>
-            ))
-          }
-
-          <button type="button" onClick={addItem}>Adicionar Item</button>
-
-
-          <button type="submit">Cadastrar Serviço</button>
-        </form>
+              {formData.is_weight && (
+                <div>
+                  <label htmlFor="weight">Peso (Kg):</label>
+                  <input type="number" id="weight" name="weight" min="0" step="0.01" onChange={handleChange} value={formData.weight} />
+                </div>
+              )}
+            </div>
+            <button type="submit" className={styles.registerServiceButton}>Cadastrar Serviço</button>
+          </form>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ServiceRegister;
+export default ServiceRegisterModal;

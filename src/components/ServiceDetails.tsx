@@ -25,7 +25,7 @@ interface ServicesTableProps {
     isOpen: boolean;
     onClose: () => void;
     serviceId: string;
-  }
+}
 
 const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceId }) => {
     const [service, setService] = useState<Service>(
@@ -92,41 +92,42 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceI
     }
 
     return (
-        <div className={styles.serviceCardContainer}>
-            <button onClick={onClose}>Close</button>
-            {service && (
-                <div>
-                    <div>
-                        <h1>Cliente: {`${service?.client_first_name} ${service?.client_last_name}`}</h1>
-                        <p>Contato: (24) 99854-8386</p>
-                        <p>Endereço: Avenida Nilo Peçanha, 1010</p>
-                    </div>
-                    <div className={styles.serviceItems}>
-                        {
-                            service.items.map((item) => (
-                                <div key={item.id}>
-                                    <h2>{item.name}</h2>
-                                    <p>x{item.item_quantity}</p>
-                                </div>
-                            ))
-                        }
-
-
-                    </div>
-
-                    <div className={styles.price}>
-                        <h2>Total</h2>
-                        <p>{formatPrice(service.total_price)}</p>
-                    </div>
-
+        <div className={styles.serviceCardContainer} onClick={onClose}>
+            <div className={styles.serviceCardContent} onClick={e => e.stopPropagation()}>
+                <div className={styles.buttonContainer}>
                     <div className={styles.serviceButtons}>
                         <button className={styles.editButton}>EDITAR</button>
                         <button className={styles.deleteButton}>EXCLUIR</button>
                     </div>
+                    <button onClick={onClose} className={styles.close}>X</button>
                 </div>
-            )}
+                {service && (
+                    <div>
+                        <div>
+                            <h1>Cliente: {`${service?.client_first_name} ${service?.client_last_name}`}</h1>
+                            <p>Contato: (24) 99854-8386</p>
+                            <p>Endereço: Avenida Nilo Peçanha, 1010</p>
+                        </div>
+                        <div className={styles.serviceItems}>
+                            {
+                                service.items.map((item) => (
+                                    <div key={item.id}>
+                                        <h2>{item.name}</h2>
+                                        <p>x{item.item_quantity}</p>
+                                    </div>
+                                ))
+                            }
 
 
+                        </div>
+
+                        <div className={styles.price}>
+                            <h2>Total</h2>
+                            <p>{formatPrice(service.total_price)}</p>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

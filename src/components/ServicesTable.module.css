@@ -1,18 +1,14 @@
 .serviceTable {
-    flex-grow: 1;
-    width: 70%;
     border-collapse: collapse;
     margin-top: 20px;
     background-color: #ffffff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-    margin-left: 3rem;
-    margin-right: 3rem;
+    width: 100%;
 }
 
 .serviceTable thead {
-    background-color: #4FBBFF;
-    color: #ffffff;
+    background-color: #F2F3F3;
+    color: #001A2A;
 }
 
 .serviceTable th {
@@ -23,7 +19,7 @@
 }
 
 .serviceTable tr:nth-child(even) {
-    background-color: #CBEBFF;
+    background-color: #F2F3F3;
 }
 
 .serviceTable th {
@@ -36,4 +32,9 @@
 
 .serviceTable tbody td {
     text-align: center;
+    padding: .75rem 1rem;
+}
+
+.serviceTable tbody tr td:first-child {
+    cursor: pointer;
 }

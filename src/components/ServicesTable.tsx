@@ -26,7 +26,12 @@ interface ServicesResponse {
   services: Service[];
 }
 
-const ServicesTable = () => {
+interface ServicesTableProps {
+  updateTrigger: number; // This prop will be used to trigger updates in the table
+}
+
+
+const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger }) => {
   const [services, setServices] = useState<Service[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState("");
@@ -73,7 +78,7 @@ const ServicesTable = () => {
     };
 
     fetchServices();
-  }, []);
+  }, [updateTrigger]);
 
   return (
     <>

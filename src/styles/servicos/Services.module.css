@@ -1,3 +1,26 @@
 .serviceContainer {
     display: flex;
 }
+
+.serviceContent {
+    flex-grow: 1;
+    padding: 2rem 3rem;
+}
+
+.serviceContentTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.serviceContent div h1 {
+    color: #001A2A;
+}
+
+.serviceRegisterButton {
+    border: none;
+    background-color: #4FBBFF;
+    color: #fff;
+    font-weight: 700;
+    padding: 1rem 2rem;
+}
