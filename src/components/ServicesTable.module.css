@@ -38,3 +38,54 @@
 .serviceTable tbody tr td:first-child {
     cursor: pointer;
 }
+
+.paginationContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: 1rem;
+    flex-direction: column;
+  }
+  
+
+.pagination {
+    display: flex;
+    align-items: center;
+}
+
+.pagination button {
+    background-color: #CBEBFF;
+    border: none;
+    padding: .5rem;
+}
+
+.pagination span {
+    color: #001A2A;
+    font-size: 1rem;
+    padding: 1rem;
+}
+
+.paginationSearch {
+    margin-top: .5rem;
+}
+
+.paginationSearch input {
+    width: 88px;
+    height: 40px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 16px;
+    color: #333333;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin-right: .5rem;
+}
+
+.paginationSearch button {
+    background-color: #CBEBFF;
+    border: none;
+    padding: .7rem;
+    font-weight: 700;
+}

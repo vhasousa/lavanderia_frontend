@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import ServiceDetails from './ServiceDetails'
+import { ArrowLeft, ArrowRight } from 'react-feather'
 
 import styles from './ServicesTable.module.css'
 
@@ -24,6 +25,8 @@ interface Service {
 
 interface ServicesResponse {
   services: Service[];
+  page: number;
+  total_pages: number;
 }
 
 interface ServicesTableProps {
@@ -33,6 +36,9 @@ interface ServicesTableProps {
 
 const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger }) => {
   const [services, setServices] = useState<Service[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [pageInput, setPageInput] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState("");
 
@@ -66,19 +72,48 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger }) => {
     // Function to fetch services data
     const fetchServices = async () => {
       try {
-        const response = await fetch('http://localhost:8080/services');
+        const response = await fetch(`http://localhost:8080/services?page=${currentPage}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data: ServicesResponse = await response.json();
         setServices(data.services);
+        setTotalPages(data.total_pages);
       } catch (error) {
         console.error('There was a problem with your fetch operation:', error);
       }
     };
 
     fetchServices();
-  }, [updateTrigger]);
+  }, [updateTrigger, currentPage]);
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPageInput(e.target.value); // Update pageInput as user types
+  };
+
+  const jumpToPage = () => {
+    const pageNumber = parseInt(pageInput, 10);
+    if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    } else {
+      alert(`Please enter a valid page number between 1 and ${totalPages}`);
+      setPageInput(''); // Reset the input if the value is invalid
+    }
+  };
+
+  const handleInputKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      jumpToPage(); // Call jumpToPage when user presses Enter
+    }
+  };
 
   return (
     <>
@@ -104,6 +139,28 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger }) => {
           ))}
         </tbody>
       </table>
+
+      <div className={styles.paginationContainer}>
+        <div className={styles.pagination}>
+          <button onClick={handlePrevPage} disabled={currentPage === 1}>
+            <ArrowLeft className={styles.arrowLeftIcon} />
+          </button>
+          <span>{currentPage} de {totalPages}</span>
+          <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+            <ArrowRight />
+          </button>
+        </div>
+        <div className={styles.paginationSearch}>
+          <input
+            type="text"
+            value={pageInput}
+            onChange={handleInputChange}
+            onKeyPress={handleInputKeyPress}
+            placeholder="Ir para"
+          />
+          <button onClick={jumpToPage}>Ir</button>
+        </div>
+      </div>
 
       {isModalOpen && (
         <ServiceDetails
