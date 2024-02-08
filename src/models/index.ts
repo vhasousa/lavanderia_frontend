@@ -24,4 +24,19 @@ export interface LaundryService {
     name: string;
     price: number;
   }
+
+  export interface CreateClient {
+    first_name: string;
+    last_name: string;
+    username: string;
+    phone: string;
+    is_monthly: boolean;
+    street: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    number: string;
+    complement: string;
+    landmark: string;
+  }
   

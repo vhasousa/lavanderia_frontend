@@ -70,7 +70,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger }) => {
 
   useEffect(() => {
     // Function to fetch services data
-    const fetchServices = async () => {
+    const fetchClient = async () => {
       try {
         const response = await fetch(`http://localhost:8080/services?page=${currentPage}`);
         if (!response.ok) {
@@ -84,7 +84,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger }) => {
       }
     };
 
-    fetchServices();
+    fetchClient();
   }, [updateTrigger, currentPage]);
 
   const handlePrevPage = () => {

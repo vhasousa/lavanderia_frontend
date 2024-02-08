@@ -8,7 +8,7 @@ import ServiceRegisterModal from '@/components/ServiceRegisterModal';
 
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [updateTrigger, setUpdateTrigger] = useState(0); // Initial value is 0
+  const [updateTrigger, setUpdateTrigger] = useState(0);
 
 
   const openModal = () => {
