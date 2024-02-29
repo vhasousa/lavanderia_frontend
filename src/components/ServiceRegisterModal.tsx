@@ -35,8 +35,9 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
   // Função para carregar clientes e converter para o formato esperado por react-select
   const fetchClients = async () => {
     const response = await fetch('http://localhost:8080/clients');
-    const data: Client[] = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
-    const clientOptions: SelectOption[] = data.map(client => ({
+    const data = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
+    const responseClients: Client[] = data.clients
+    const clientOptions: SelectOption[] = responseClients.map(client => ({
       value: client.id.toString(), // Garante que o valor seja uma string
       label: `${client.first_name} ${client.last_name}` // Ajuste conforme necessário
     }));
@@ -46,7 +47,7 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
   const fetchItems = async () => {
     const response = await fetch('http://localhost:8080/items');
     const data = await response.json();
-    setItems(data);
+    setItems(data.items);
   };
 
   const addItem = () => {

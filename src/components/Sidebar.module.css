@@ -3,15 +3,48 @@
     height: 100vh;
     background-color: #4FBBFF;
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    align-items: center; /* Centers the children horizontally */
+}
+
+.logoContainer {
+    display: flex;
+    justify-content: center; /* Centers the logo horizontally */
+    width: 100%; /* Ensures the div takes full width of the sidebar */
+}
+
+.linksContainer {
+    width: 100%; /* Ensures the div takes full width of the sidebar */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Aligns the links to the left */
 }
 
 .sidebar ul {
     list-style: none;
     padding: 0;
+    width: 100%; /* Ensures the ul takes full width of the linksContainer */
 }
 
 .sidebar ul li {
-    margin-bottom: 10px;
+    margin-bottom: 24px;
     color: #fff;
     font-weight: 700;
+    text-align: left; /* Ensures the text within each li is aligned to the left */
 }
+
+.icon {
+    margin-right: 8px; /* Adds some space between the icon and the text */
+    vertical-align: middle; /* Aligns the icon with the middle of the text */
+}
+
+.active a {
+    background-color: #367fa9; /* Example background color for active link */
+    color: #ffffff; /* Example text color for active link */
+    padding: 10px 15px; /* Example padding for active link */
+    border-radius: 4px; /* Example border radius for active link */
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Sidebar from '../../components/Sidebar';
 import ServicesTable from '@/components/ServicesTable';
@@ -9,10 +9,14 @@ import ServiceRegisterModal from '@/components/ServiceRegisterModal';
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updateTrigger, setUpdateTrigger] = useState(0);
-
+  const [searchTerm, setSearchTerm] = useState('');
 
   const openModal = () => {
     setIsModalOpen(true);
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
   };
 
   return (
@@ -23,7 +27,15 @@ const Services = () => {
           <h1>Serviços cadastrados</h1>
           <button className={styles.serviceRegisterButton} onClick={() => openModal()}>NOVO SERVIÇO  +</button>
         </div>
-        <ServicesTable updateTrigger={updateTrigger} />
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Pesquisar"
+          className={styles.searchInput}
+        />
+
+        <ServicesTable updateTrigger={updateTrigger} searchTerm={searchTerm} />
 
         {isModalOpen && (
           <ServiceRegisterModal

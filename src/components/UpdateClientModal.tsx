@@ -219,7 +219,7 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
               <label htmlFor="is_monthly">Mensal:</label>
               <input type="checkbox" id="is_monthly" name="is_monthly" onChange={handleChange} />
             </div>
-            <button type="submit" className={styles.registerClientButton}>Cadastrar cliente</button>
+            <button type="submit" className={styles.registerClientButton}>Atualizar cliente</button>
           </form>
         </div>
       </div>

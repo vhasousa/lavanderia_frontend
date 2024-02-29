@@ -24,3 +24,14 @@
     font-weight: 700;
     padding: 1rem 2rem;
 }
+
+.searchInput {
+    background-color: #fff;
+    color: #001A2A;
+    font-weight: 700;
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+}

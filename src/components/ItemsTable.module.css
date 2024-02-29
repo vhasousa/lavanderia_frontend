@@ -1,0 +1,192 @@
+.itemTable {
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.itemTable thead {
+    background-color: #F2F3F3;
+    color: #001A2A;
+}
+
+.itemTable th {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.itemTable tr:nth-child(even) {
+    background-color: #F2F3F3;
+}
+
+.itemTable th {
+    height: 50px;
+}
+
+.itemTable tbody td:first-child {
+    text-align: left;
+}
+
+.itemTable tbody td {
+    text-align: center;
+    padding: .75rem 1rem;
+}
+
+.itemTable tbody tr td:first-child {
+    cursor: pointer;
+}
+
+.paginationContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: 1rem;
+    flex-direction: column;
+  }
+  
+
+.pagination {
+    display: flex;
+    align-items: center;
+}
+
+.pagination button {
+    background-color: #CBEBFF;
+    border: none;
+    padding: .5rem;
+}
+
+.pagination span {
+    color: #001A2A;
+    font-size: 1rem;
+    padding: 1rem;
+}
+
+.paginationSearch {
+    margin-top: .5rem;
+}
+
+.paginationSearch input {
+    width: 88px;
+    height: 40px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 16px;
+    color: #333333;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin-right: .5rem;
+}
+
+.paginationSearch button {
+    background-color: #CBEBFF;
+    border: none;
+    padding: .7rem;
+    font-weight: 700;
+}
+
+.actionsButton {
+    font-size: 8px;
+}
+
+.editButton {
+    padding: 4px;
+}
+
+.editButton:hover {
+    background-color: #B3BBC0;
+    padding: 4px;
+}
+
+.deleteButton {
+    color: #FF6B6C;
+    padding: 4px;
+}
+
+.deleteButton:hover {
+    background-color: #FFC4C4;
+    padding: 4px;
+}
+
+.confirmationModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 400px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    z-index: 1000; /* Ensure it's above other content */
+    animation: expandAnimation 0.3s ease-out;
+}
+
+.confirmationModalContent {
+    margin-bottom: 20px;
+}
+
+.confirmationButton {
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.confirmButton {
+    background-color: #FF6B6C;
+    color: white;
+}
+
+.cancelButton {
+    background-color: #ccc;
+    color: black;
+}
+
+@keyframes expandAnimation {
+    from {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.iconWarning {
+    color: #FF6B6C;
+    margin-bottom: 15px;
+}
+
+@keyframes fadeInScaleUp {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Fade out and scale down animation */
+  @keyframes fadeOutScaleDown {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+  }

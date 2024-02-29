@@ -120,13 +120,6 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
         return numero;
     }
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(price);
-    };
-
     useEffect(() => {
         if (isOpen) {
             const fetchClient = async () => {
