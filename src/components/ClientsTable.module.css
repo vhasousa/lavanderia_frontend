@@ -1,4 +1,4 @@
-.serviceTable {
+.clientTable {
     border-collapse: collapse;
     margin-top: 20px;
     background-color: #ffffff;
@@ -6,36 +6,36 @@
     width: 100%;
 }
 
-.serviceTable thead {
+.clientTable thead {
     background-color: #F2F3F3;
     color: #001A2A;
 }
 
-.serviceTable th {
+.clientTable th {
     text-align: left;
     padding: 12px;
     border-bottom: 1px solid #ddd;
     text-align: center;
 }
 
-.serviceTable tr:nth-child(even) {
+.clientTable tr:nth-child(even) {
     background-color: #F2F3F3;
 }
 
-.serviceTable th {
+.clientTable th {
     height: 50px;
 }
 
-.serviceTable tbody td:first-child {
+.clientTable tbody td:first-child {
     text-align: left;
 }
 
-.serviceTable tbody td {
+.clientTable tbody td {
     text-align: center;
     padding: .75rem 1rem;
 }
 
-.serviceTable tbody tr td:first-child {
+.clientTable tbody tr td:first-child {
     cursor: pointer;
 }
 
@@ -45,8 +45,8 @@
     align-items: flex-end;
     margin-top: 1rem;
     flex-direction: column;
-}
-
+  }
+  
 
 .pagination {
     display: flex;

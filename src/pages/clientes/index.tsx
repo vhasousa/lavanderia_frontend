@@ -1,17 +1,34 @@
+import ClientRegisterModal from '@/components/ClientRegisterModal';
 import Sidebar from '../../components/Sidebar';
 import styles from '../../styles/clientes/Clients.module.css';
+import { useState } from 'react';
+import ClientsTable from '@/components/ClientsTable';
 
-interface UpdateServiceFormProps {
-  serviceId: string;
-}
+const Clients = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updateTrigger, setUpdateTrigger] = useState(0);
 
-const Clients: React.FC<UpdateServiceFormProps> = ({ serviceId }) => {
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
 
   return (
     <div className={styles.clientContainer}>
       <Sidebar />
-      <div>
-        <h1>Clientes</h1>
+      <div className={styles.clientContent}>
+        <div className={styles.clientContentTitle}>
+          <h1>Clientes</h1>
+          <button className={styles.clientRegisterButton} onClick={() => openModal()}>NOVO CLIENTE  +</button>
+        </div>
+
+        <ClientsTable updateTrigger={updateTrigger} />
+
+        {isModalOpen && (
+          <ClientRegisterModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)} 
+            onClientRegistered={() => setUpdateTrigger(prev => prev + 1)} />
+        )}
       </div>
     </div>
   );

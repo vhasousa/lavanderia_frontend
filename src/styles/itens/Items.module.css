@@ -1,23 +1,23 @@
-.clientContainer {
+.itemContainer {
     display: flex;
 }
 
-.clientContent {
+.itemContent {
     flex-grow: 1;
     padding: 2rem 3rem;
 }
 
-.clientContentTitle {
+.itemContentTitle {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.clientContent div h1 {
+.itemContent div h1 {
     color: #001A2A;
 }
 
-.clientRegisterButton {
+.itemRegisterButton {
     border: none;
     background-color: #4FBBFF;
     color: #fff;

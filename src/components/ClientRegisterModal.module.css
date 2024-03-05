@@ -1,0 +1,124 @@
+.clientRegisterContainer {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    /* Ensure it's above other content */
+}
+
+.clientRegisterContent {
+    background: #fff;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+}
+
+.clientRegisterTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.clientRegisterTitle h1 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.clientRegisterTitle .close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.clientRegisterFormContainer {
+    overflow-y: auto;
+    max-height: 80vh;
+    /* Limit the height of the form container */
+}
+
+.clientRegisterForm {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr;
+}
+
+.clientRegisterForm div {
+    margin-bottom: 10px;
+}
+
+.clientRegisterForm label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.clientRegisterForm input[type="text"],
+.clientRegisterForm input[type="checkbox"],
+.clientRegisterForm select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.clientRegisterForm input[type="checkbox"] {
+    width: auto;
+}
+
+.clientRegisterForm .registerClientButton {
+    background-color: #4FBBFF;
+    color: #001A2A;
+    font-weight: 700;
+    border: none;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    grid-column: span 2;
+    /* Make the button span two columns */
+}
+
+.clientRegisterForm .registerClientButton:hover {
+    background-color: #72C9FF;
+}
+
+/* Handle the responsiveness */
+@media (max-width: 768px) {
+    .clientRegisterForm {
+        grid-template-columns: 1fr;
+    }
+
+    .clientRegisterForm .registerClientButton {
+        grid-column: span 1;
+    }
+}
+
+/* Specific styles for react-select */
+.basic-single {
+    min-width: 200px;
+}
+
+.select__control {
+    border-color: #ddd;
+}
+
+.select__menu {
+    border-radius: 0;
+}
+
+.select__option--is-focused {
+    background-color: #e9ecef;
+}
+
+.select__option--is-selected {
+    background-color: #dee2e6;
+}

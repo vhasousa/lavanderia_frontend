@@ -1,0 +1,99 @@
+.itemRegisterContainer {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    /* Ensure it's above other content */
+}
+
+.itemRegisterContent {
+    background: #fff;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+}
+
+.itemRegisterTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.itemRegisterTitle h1 {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.itemRegisterTitle .close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.itemRegisterFormContainer {
+    overflow-y: auto;
+    max-height: 80vh;
+    /* Limit the height of the form container */
+}
+
+.itemRegisterForm {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr;
+}
+
+.itemRegisterForm div {
+    margin-bottom: 10px;
+}
+
+.itemRegisterForm label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.itemRegisterForm input[type="text"],
+.itemRegisterForm input[type="number"],
+.itemRegisterForm select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.itemRegisterForm .registerItemButton {
+    background-color: #4FBBFF;
+    color: #001A2A;
+    font-weight: 700;
+    border: none;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+    grid-column: span 2;
+    /* Make the button span two columns */
+}
+
+.itemRegisterForm .registerItemButton:hover {
+    background-color: #72C9FF;
+}
+
+/* Handle the responsiveness */
+@media (max-width: 768px) {
+    .itemRegisterForm {
+        grid-template-columns: 1fr;
+    }
+
+    .itemRegisterForm .registerItemButton {
+        grid-column: span 1;
+    }
+}

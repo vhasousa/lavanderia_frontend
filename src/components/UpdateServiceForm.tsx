@@ -5,6 +5,7 @@ import { useState, FormEvent, useEffect } from 'react';
 
 import styles from './UpdateServiceForm.module.css'
 import { X } from 'react-feather';
+import { toast } from 'react-toastify';
 
 interface Item {
     id: string;
@@ -90,8 +91,9 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
     // Função para carregar clientes e converter para o formato esperado por react-select
     const fetchClients = async () => {
         const response = await fetch('http://localhost:8080/clients');
-        const data: Client[] = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
-        const clientOptions: SelectOption[] = data.map(client => ({
+        const data = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
+        const responseClients: Client[] = data.clients
+        const clientOptions: SelectOption[] = responseClients.map(client => ({
             value: client.id.toString(), // Garante que o valor seja uma string
             label: `${client.first_name} ${client.last_name}` // Ajuste conforme necessário
         }));
@@ -101,7 +103,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
     const fetchItems = async () => {
         const response = await fetch('http://localhost:8080/items');
         const data = await response.json();
-        setItems(data);
+        setItems(data.items);
     };
 
     const convertDate = (date: string) => {
@@ -133,7 +135,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
         // Send PATCH request to update service details
         const serviceResponse = await fetch(`http://localhost:8080/services/${serviceId}`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -144,6 +146,19 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             // Handle error
             console.log(serviceResponse)
             console.error('Failed to update service details');
+
+            try {
+                const errorResponse = await serviceResponse.json();
+                if (errorResponse.error === "Validation failed") { 
+                  toast.error(errorResponse.details.message);
+                } else {
+                  toast.error("An error occurred. Please try again.");
+                }
+              } catch (error) {
+                toast.error("An unexpected error occurred. Please try again.");
+              }
+        } else {
+            toast.success("Serviço atualizado com sucesso!")
         }
 
         const newItems = selectedItemsWithOptions
@@ -153,8 +168,6 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                 item_quantity: item.item_quantity,
                 observation: ""
             }));
-
-        console.log(newItems)
 
         if (newItems.length > 0) {
             const itemsResponse = await fetch(`http://localhost:8080/services/${serviceId}/items`, {
