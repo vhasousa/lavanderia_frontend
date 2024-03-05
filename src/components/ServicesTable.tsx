@@ -32,10 +32,11 @@ interface ServicesResponse {
 interface ServicesTableProps {
   updateTrigger: number;
   searchTerm: string;
+  statusFilter: string;
 }
 
 
-const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm }) => {
+const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm, statusFilter }) => {
   const [services, setServices] = useState<Service[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -73,7 +74,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
     // Function to fetch services data
     const fetchClient = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/services?page=${currentPage}&searchTerm=${searchTerm}`);
+        const response = await fetch(`http://localhost:8080/services?page=${currentPage}&searchTerm=${searchTerm}&status=${statusFilter}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -86,7 +87,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
     };
 
     fetchClient();
-  }, [updateTrigger, currentPage, searchTerm]);
+  }, [updateTrigger, currentPage, searchTerm, statusFilter]);
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
@@ -116,6 +117,15 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
     }
   };
 
+  const updateServiceStatus = (updatedServiceId: string, newStatus: string) => {
+    setServices(services.map(service => {
+      if (service.id === updatedServiceId) {
+        return { ...service, status: newStatus };
+      }
+      return service;
+    }));
+  };
+
   return (
     <>
       <table className={styles.serviceTable}>
@@ -131,12 +141,12 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
           {services.length > 0 ? (
             services.map((service) => (
               <tr key={service.id}>
-                <td onClick={() => openModal(service.id)}>
+                <td data-label="Nome do cliente" onClick={() => openModal(service.id)}>
                   {`${service.client_first_name} ${service.client_last_name}`}
                 </td>
-                <td>{service.status}</td>
-                <td>{formatDate(service.estimated_completion_date)}</td>
-                <td>{formatPrice(service.total_price)}</td>
+                <td data-label="Status">{service.status}</td>
+                <td data-label="Data de entrega estimada">{formatDate(service.estimated_completion_date)}</td>
+                <td data-label="Preço total">{formatPrice(service.total_price)}</td>
               </tr>
             ))
           ) : (
@@ -176,6 +186,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           serviceId={selectedServiceId}
+          onUpdateStatus={updateServiceStatus}
         />
       )}
     </>

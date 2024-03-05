@@ -5,6 +5,7 @@ import { useState, FormEvent, useEffect } from 'react';
 
 import styles from './UpdateServiceForm.module.css'
 import { X } from 'react-feather';
+import { toast } from 'react-toastify';
 
 interface Item {
     id: string;
@@ -134,7 +135,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
         // Send PATCH request to update service details
         const serviceResponse = await fetch(`http://localhost:8080/services/${serviceId}`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -145,6 +146,19 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             // Handle error
             console.log(serviceResponse)
             console.error('Failed to update service details');
+
+            try {
+                const errorResponse = await serviceResponse.json();
+                if (errorResponse.error === "Validation failed") { 
+                  toast.error(errorResponse.details.message);
+                } else {
+                  toast.error("An error occurred. Please try again.");
+                }
+              } catch (error) {
+                toast.error("An unexpected error occurred. Please try again.");
+              }
+        } else {
+            toast.success("Serviço atualizado com sucesso!")
         }
 
         const newItems = selectedItemsWithOptions
@@ -154,8 +168,6 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                 item_quantity: item.item_quantity,
                 observation: ""
             }));
-
-        console.log(newItems)
 
         if (newItems.length > 0) {
             const itemsResponse = await fetch(`http://localhost:8080/services/${serviceId}/items`, {

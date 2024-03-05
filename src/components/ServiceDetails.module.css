@@ -1,14 +1,17 @@
 .serviceCardContainer {
-    position: fixed; /* Positioning relative to the viewport */
+    position: fixed;
+    /* Positioning relative to the viewport */
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent black */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Ensure it's above other content */
+    z-index: 1000;
+    /* Ensure it's above other content */
 }
 
 .serviceCardContent {
@@ -22,11 +25,13 @@
     max-width: 500px;
     z-index: 1001;
 
-    max-height: 600px; /* Adjust based on your needs */
-    overflow-y: auto; /* Enables vertical scrolling when content exceeds 500px */
+    max-height: 600px;
+    /* Adjust based on your needs */
+    overflow-y: auto;
+    /* Enables vertical scrolling when content exceeds 500px */
 }
 
-.serviceCardContent div{
+.serviceCardContent div {
     margin-bottom: 2rem;
 }
 
@@ -107,7 +112,8 @@
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
-    z-index: 1000; /* Ensure it's above other content */
+    z-index: 1000;
+    /* Ensure it's above other content */
     animation: expandAnimation 0.3s ease-out;
 }
 
@@ -139,6 +145,7 @@
         transform: translate(-50%, -50%) scale(0.5);
         opacity: 0;
     }
+
     to {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
@@ -152,32 +159,155 @@
 
 @keyframes fadeInScaleUp {
     from {
-      opacity: 0;
-      transform: scale(0.95);
+        opacity: 0;
+        transform: scale(0.95);
     }
+
     to {
-      opacity: 1;
-      transform: scale(1);
+        opacity: 1;
+        transform: scale(1);
     }
-  }
-  
-  /* Fade out and scale down animation */
-  @keyframes fadeOutScaleDown {
+}
+
+/* Fade out and scale down animation */
+@keyframes fadeOutScaleDown {
     from {
-      opacity: 1;
-      transform: scale(1);
+        opacity: 1;
+        transform: scale(1);
     }
+
     to {
-      opacity: 0;
-      transform: scale(0.95);
+        opacity: 0;
+        transform: scale(0.95);
     }
-  }
-  
-  .serviceCardContainer {
-    animation: fadeInScaleUp 0.3s ease forwards; /* Apply the opening animation */
-  }
-  
-  .serviceCardContainer.closing {
-    animation: fadeOutScaleDown 0.3s ease forwards; /* Apply the closing animation */
-  }
+}
+
+.serviceCardContainer {
+    animation: fadeInScaleUp 0.3s ease forwards;
+    /* Apply the opening animation */
+}
+
+.serviceCardContainer.closing {
+    animation: fadeOutScaleDown 0.3s ease forwards;
+    /* Apply the closing animation */
+}
+
+.statusProgress {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    margin-top: 1rem; /* Space above the progress bar */
+}
+
+/* Full line of the progress bar */
+.statusProgress::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: 4px; /* Height of the progress bar line */
+    background: #D3D3D3; /* Background color of the progress bar line */
+    z-index: 0;
+    transform: translateY(-50%);
+}
+
+/* The filled part of the progress bar */
+.statusProgressFilled {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 4px; /* Height of the progress bar line */
+    background: #61C2FF; /* Background color of the filled part */
+    z-index: 1;
+    transform: translateY(-50%);
+    transition: width 0.3s ease-in-out; /* Smooth transition for the width */
+}
+
+.statusButton {
+    background: transparent;
+    border: none;
+    position: relative;
+    padding: 0;
+    z-index: 2;
+}
+
+.statusButton .statusIndicator {
+    display: block;
+    width: 25px; /* Diameter of the circle */
+    height: 25px;
+    line-height: 25px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background-color: #D3D3D3; /* Default color */
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Active (filled) style for the indicator */
+.filledStatus .statusIndicator {
+    background-color: #61C2FF; /* Active color */
+}
+
+/* Position the status name below the circle */
+.statusButton::after {
+    content: attr(data-status);
+    position: absolute;
+    top: 100%; /* Place it below the circle */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px; /* Space between the circle and text */
+    font-size: 0.75rem;
+    color: #000;
+    white-space: nowrap;
+}
+
+.paymentToggleContainer {
+    display: flex;
+    align-items: center; /* Ensures vertical center alignment */
+    gap: 8px; /* Adjusts the space between elements */
+
+    /* If the container's height is an issue */
+    min-height: 40px; /* Adjust based on your needs */
+
+    /* Manual adjustment if necessary (adjust values as needed) */
+    /* .switchClass represents your Switch component's class if you can target it */
+
+}
+
+.customCheckbox {
+    display: none; /* Hide the actual checkbox */
+}
+
+.checkboxLabel {
+    display: inline-block;
+    width: 50px; /* Width of the custom toggle */
+    height: 25px; /* Height of the custom toggle */
+    background-color: #ccc; /* Off state color */
+    border-radius: 25px; /* Rounded corners for the toggle */
+    position: relative;
+    vertical-align: middle; /* Align with the label text */
+    cursor: pointer;
+}
+
+.customCheckbox:checked + .checkboxLabel {
+    background-color: #4CAF50; /* On state color */
+}
+
+.checkboxLabel:after {
+    content: '';
+    position: absolute;
+    width: 20px; /* Width of the slider */
+    height: 20px; /* Height of the slider */
+    border-radius: 50%; /* Circular slider */
+    background-color: white; /* Slider color */
+    top: 2.5px; /* Positioning offset from the top */
+    left: 2.5px; /* Positioning offset from the left */
+    transition: all 0.3s; /* Smooth transition for sliding effect */
+}
+
+.customCheckbox:checked + .checkboxLabel:after {
+    left: 25px; /* Slider moves to the right when checked */
+}
+
 

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { LaundryService, Client, Item } from '../models';
 
 import styles from './ServiceRegisterModal.module.css'
+import { toast } from 'react-toastify';
 
 interface ServicesProps {
   isOpen: boolean;
@@ -108,6 +109,27 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!formData.client_id) {
+      toast.error('Por favor, selecione um cliente!');
+      return;
+    }
+
+    if (formData.is_weight && formData.weight <= 0) {
+      toast.error('Por favor, informe o peso!');
+      return;
+    }
+
+    const estimatedCompletionDate = new Date(formData.estimated_completion_date);
+    if (estimatedCompletionDate <= new Date()) {
+      toast.error('A data de entrega estimada não pode ser data no passado');
+      return;
+    }
+
+    if (selectedItemsWithOptions.some(item => !item.selectedOption || item.item_quantity <= 0)) {
+      toast.error('Garanta que existem itens selecionados e possuem quantidade válida');
+      return;
+    }
+
     const itemsToSend = selectedItemsWithOptions.map(item => ({
       laundry_item_id: item.selectedOption ? item.selectedOption.value : '',
       item_quantity: item.item_quantity,
@@ -138,16 +160,23 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(finalFormData), // Usa finalFormData aqui
+      body: JSON.stringify(finalFormData),
     });
     if (response.ok) {
-      // Trate o sucesso do envio
       onServiceRegistered();
-
-      // Limpa o formulário redefinindo o estado de formData para os valores iniciais
       resetForm();
+      toast.success("Serviço cadastrado com sucesso!")
     } else {
-      // Trate o erro
+      try {
+        const errorResponse = await response.json();
+        if (errorResponse.error === "Validation failed") { 
+          toast.error(errorResponse.details.message);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 

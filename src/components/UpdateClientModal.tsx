@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { LaundryService, Item, CreateClient } from '../models';
 
 import styles from './ClientRegisterModal.module.css'
+import { toast } from 'react-toastify';
 
 interface ClientsProps {
   isOpen: boolean;
@@ -105,12 +106,19 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui
     });
     if (response.ok) {
-      // Trate o sucesso do envio
+      toast.success("Serviço atualizado com sucesso!")
       onClientRegistered();
-
-      // Limpa o formulário redefinindo o estado de formData para os valores iniciais
     } else {
-      // Trate o erro
+      try {
+        const errorResponse = await response.json();
+        if (errorResponse.error === "Validation failed") { 
+          toast.error(errorResponse.details.message);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 

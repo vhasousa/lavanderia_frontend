@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useService } from '../context/ServiceContext';
-import { useRouter } from 'next/router';
+import { ChangeEventHandler, useEffect, useState } from 'react';
 import { AlertTriangle, X } from 'react-feather'
+import Switch from 'react-switch';
 
 import styles from './ServiceDetails.module.css'
 import UpdateServiceForm from './UpdateServiceForm';
@@ -19,6 +18,7 @@ interface Service {
     status: string;
     total_price: number;
     is_paid: boolean;
+    completed_at: Date | null | string;
     estimated_completion_date: string
     client_first_name: string
     client_last_name: string
@@ -31,13 +31,14 @@ interface Service {
     phone: string
 }
 
-interface ServicesTableProps {
+interface ServiceDetailProps {
     isOpen: boolean;
     onClose: () => void;
     serviceId: string;
+    onUpdateStatus: (updatedServiceId: string, newStatus: string) => void;
 }
 
-const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceId }) => {
+const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceId, onUpdateStatus }) => {
     const [updateTrigger, setUpdateTrigger] = useState(0); // Initial value is 0
     const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
@@ -63,9 +64,26 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceI
             postal_code: "",
             state: "",
             street: "",
+            completed_at: null,
         }
     );
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const statusOptions = ['Separado', 'Lavando', 'Secando', 'Passando', 'Finalizado'];
+
+    const getFilledWidth = (currentStatus: string) => {
+        const numberOfSteps = statusOptions.length;
+        const currentStatusIndex = statusOptions.findIndex(status => status === currentStatus);
+        // Calculate the width as a percentage of the progress bar
+        const width = (currentStatusIndex / (numberOfSteps - 1)) * 100 + '%';
+        return width;
+    };
+
+
+    const isStatusFilled = (currentStatus: string, statusOption: string) => {
+        const currentStatusIndex = statusOptions.indexOf(currentStatus);
+        const statusOptionIndex = statusOptions.indexOf(statusOption);
+        return currentStatusIndex >= statusOptionIndex;
+    };
 
     const handleClose = () => {
         setIsClosing(true); // Trigger the closing animation
@@ -105,7 +123,6 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceI
         setIsDeleteConfirmationOpen(false); // Close confirmation modal without deleting
     };
 
-    // Include an onClose handler for the edit modal
     const closeEditModal = () => {
         setIsEditModalOpen(false);
     };
@@ -147,6 +164,65 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceI
             currency: 'BRL',
         }).format(price);
     };
+
+    const handleStatusChange = async (newStatus: string) => {
+        const updatedServiceData = {
+            ...service,
+            status: newStatus,
+            completed_at: newStatus === 'Finalizado' ? new Date().toISOString() : null,
+        };
+    
+        try {
+            const response = await fetch(`http://localhost:8080/services/${service.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedServiceData),
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to update the service status');
+            }
+    
+            // Update the local state to reflect the new status and completed_at date
+            setService(updatedServiceData);
+            onUpdateStatus(serviceId, newStatus); // Assuming you have some logic to handle UI update
+        } catch (error) {
+            console.error('Error updating service status:', error);
+        }
+    };
+    
+
+    const handleTogglePaidStatus = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const updatedServiceData = {
+            ...service,
+            is_paid: event.target.checked,
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8080/services/${service.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedServiceData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update payment status');
+            }
+
+            // Update local state to reflect the new payment status
+            setService(updatedServiceData);
+            // Optionally: Show a success message or update the service list
+        } catch (error) {
+            console.error('Error updating payment status:', error);
+            // Optionally: Show an error message
+        }
+    };
+
+
 
     useEffect(() => {
         if (isOpen) {
@@ -198,6 +274,19 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceI
                                 <h1>Cliente: {`${service?.client_first_name} ${service?.client_last_name}`}</h1>
                                 <p>Contato: {formatarTelefone(service.phone)}</p>
                                 <p>Endereço: {`${service.street}, ${service.number}`}</p>
+                                <div className={styles.paymentToggleContainer}>
+                                    <span>Pagamento: </span>
+                                    <input
+                                        type="checkbox"
+                                        id="paidStatusCheckbox"
+                                        checked={service.is_paid}
+                                        onChange={handleTogglePaidStatus}
+                                        className={styles.customCheckbox}
+                                    />
+                                    <label htmlFor="paidStatusCheckbox" className={styles.checkboxLabel}></label>
+                                </div>
+
+
                             </div>
                             <div className={styles.serviceItems}>
                                 {
@@ -208,18 +297,29 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceI
                                         </div>
                                     ))
                                 }
-
-
                             </div>
-
                             <div className={styles.price}>
                                 <h2>Total</h2>
                                 <p>{formatPrice(service.total_price)}</p>
+                            </div>
+                            <div className={styles.statusProgress}>
+                                <div className={styles.statusProgressFilled} style={{ width: getFilledWidth(service.status) }}></div>
+                                {statusOptions.map((statusOption, index) => (
+                                    <button
+                                        key={index}
+                                        className={`${styles.statusButton} ${service.status === statusOption ? styles.activeStatus : ''} ${isStatusFilled(service.status, statusOption) ? styles.filledStatus : ''}`}
+                                        onClick={() => handleStatusChange(statusOption)}
+                                        data-status={statusOption}
+                                    >
+                                        <span className={styles.statusIndicator}></span>
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     )}
                 </div>
             </div>
+
             {isEditModalOpen && (
                 <UpdateServiceForm
                     isOpen={isEditModalOpen}
@@ -232,4 +332,4 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ isOpen, onClose, serviceI
     );
 };
 
-export default ServicesTable;
+export default ServiceDetail;
