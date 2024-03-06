@@ -3,6 +3,7 @@ import styles from '../../styles/itens/Items.module.css';
 import { useState } from 'react';
 import ItemsTable from '@/components/ItemsTable';
 import ItemRegisterModal from '@/components/ItemRegisterModal';
+import { Header } from '@/components/Header';
 
 const Items = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,24 +14,28 @@ const Items = () => {
   };
 
   return (
-    <div className={styles.itemContainer}>
-      <Sidebar />
-      <div className={styles.itemContent}>
-        <div className={styles.itemContentTitle}>
-          <h1>Itens</h1>
-          <button className={styles.itemRegisterButton} onClick={() => openModal()}>NOVO ITEM  +</button>
+    <>
+      <Header />
+      <div className={styles.itemContainer}>
+        <Sidebar />
+        <div className={styles.itemContent}>
+          <div className={styles.itemContentTitle}>
+            <h1>Itens</h1>
+            <button className={styles.itemRegisterButton} onClick={() => openModal()}>NOVO ITEM  +</button>
+          </div>
+
+          <ItemsTable updateTrigger={updateTrigger} />
+
+          {isModalOpen && (
+            <ItemRegisterModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              onItemRegistered={() => setUpdateTrigger(prev => prev + 1)} />
+          )}
         </div>
-
-        <ItemsTable updateTrigger={updateTrigger} />
-
-        {isModalOpen && (
-          <ItemRegisterModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)} 
-            onItemRegistered={() => setUpdateTrigger(prev => prev + 1)} />
-        )}
       </div>
-    </div>
+    </>
+
   );
 };
 

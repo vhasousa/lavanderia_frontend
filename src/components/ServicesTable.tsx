@@ -155,9 +155,31 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
             </tr>
           )
           }
-
         </tbody>
       </table>
+
+      <div className={styles.cardContainer}>
+        {services.length > 0 ? (
+          services.map((service) => (
+            <div key={service.id} className={styles.card} onClick={() => openModal(service.id)}>
+              <div className={styles.cardHeader}>
+                {`${service.client_first_name} ${service.client_last_name}`}
+              </div>
+              <div className={styles.cardContent}>
+                Status: {service.status}
+              </div>
+              <div className={styles.cardContent}>
+                Data de Entrega Estimada: {formatDate(service.estimated_completion_date)}
+              </div>
+              <div className={styles.cardContent}>
+                Preço Total: {formatPrice(service.total_price)}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div>Nenhum cliente cadastrado</div>
+        )}
+      </div>
 
       <div className={styles.paginationContainer}>
         <div className={styles.pagination}>

@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 export function Header() {
-    const [navActive, setNavActive] = useState(true);
+    const [navActive, setNavActive] = useState(false);
 
     const router = useRouter();
 
@@ -25,13 +25,6 @@ export function Header() {
     return (
         <header className={styles.headerContainer}>
             <nav className={styles.nav}>
-                <Image
-                    src="/logos/logo.png"
-                    alt="Your Logo"
-                    width={48}
-                    height={48}
-                    layout="fixed"
-                />
 
                 <ul className={`${navActive ? styles.navListActive : ''} ${styles.navList}`}>
                     {menuItems.map(({ href, label, Icon }) => (
@@ -64,6 +57,14 @@ export function Header() {
                         )}
                     </i>
                 </div>
+
+                <Image
+                    src="/logos/logo.png"
+                    alt="Your Logo"
+                    width={48}
+                    height={48}
+                    layout="fixed"
+                />
             </nav>
         </header>
     );

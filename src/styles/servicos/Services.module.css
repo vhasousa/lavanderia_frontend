@@ -55,3 +55,34 @@
     border-radius: 4px;
     cursor: pointer;
 }
+
+@media (max-width: 768px) {
+    .serviceContainer {
+        margin-top: 8vh; /* Adjust the value based on the actual height of your header */
+    }
+
+    .filterContainer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .searchInput {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .statusDropdown {
+        width: 100%;
+    }
+
+    .serviceContent div h1 {
+        color: #001A2A;
+        font-size: 1.25rem;
+    }
+
+    .serviceRegisterButton {
+        padding: 1rem 1rem;
+    }
+}
