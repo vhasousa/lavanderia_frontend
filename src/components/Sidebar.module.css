@@ -1,50 +1,60 @@
 .sidebar {
-    width: 200px;
-    height: 100vh;
-    background-color: #4FBBFF;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 4rem;
-    align-items: center; /* Centers the children horizontally */
+    display: none;
 }
 
-.logoContainer {
-    display: flex;
-    justify-content: center; /* Centers the logo horizontally */
-    width: 100%; /* Ensures the div takes full width of the sidebar */
-}
+@media (min-width: 768px) {
+    .sidebar {
+        display: block;
+    }
 
-.linksContainer {
-    width: 100%; /* Ensures the div takes full width of the sidebar */
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Aligns the links to the left */
-}
+    .sidebar {
+        width: 200px;
+        height: 100vh;
+        background-color: #4FBBFF;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 4rem;
+        align-items: center;
+    }
 
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    width: 100%; /* Ensures the ul takes full width of the linksContainer */
-}
+    .logoContainer {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
 
-.sidebar ul li {
-    margin-bottom: 24px;
-    color: #fff;
-    font-weight: 700;
-    text-align: left; /* Ensures the text within each li is aligned to the left */
-}
+    .linksContainer {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-.icon {
-    margin-right: 8px; /* Adds some space between the icon and the text */
-    vertical-align: middle; /* Aligns the icon with the middle of the text */
-}
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+        width: 100%;
+    }
 
-.active a {
-    background-color: #367fa9; /* Example background color for active link */
-    color: #ffffff; /* Example text color for active link */
-    padding: 10px 15px; /* Example padding for active link */
-    border-radius: 4px; /* Example border radius for active link */
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
-}
+    .sidebar ul li {
+        margin-bottom: 24px;
+        color: #fff;
+        font-weight: 700;
+        text-align: left;
+    }
 
+    .icon {
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    .active a {
+        background-color: #367fa9;
+        color: #ffffff;
+        padding: 10px 15px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+}

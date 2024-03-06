@@ -89,3 +89,40 @@
     padding: .7rem;
     font-weight: 700;
 }
+
+.cardContainer {
+    display: none;
+    /* Hidden by default */
+    flex-direction: column;
+}
+
+.card {
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.cardHeader {
+    font-weight: bold;
+    color: #001A2A;
+    margin-bottom: 0.5rem;
+}
+
+.cardContent {
+    margin-bottom: 0.25rem;
+}
+
+/* Media Query for Mobile Devices */
+@media screen and (max-width: 768px) {
+    .serviceTable {
+        display: none;
+        /* Hide table on mobile */
+    }
+
+    .cardContainer {
+        display: flex;
+        /* Show cards on mobile */
+    }
+}

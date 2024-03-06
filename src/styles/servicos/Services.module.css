@@ -55,3 +55,18 @@
     border-radius: 4px;
     cursor: pointer;
 }
+
+@media (max-width: 768px) {
+    .serviceContainer {
+        margin-top: 8vh; /* Adjust the value based on the actual height of your header */
+    }
+
+    .serviceContent div h1 {
+        color: #001A2A;
+        font-size: 1.25rem;
+    }
+
+    .serviceRegisterButton {
+        padding: 1rem 1rem;
+    }
+}
