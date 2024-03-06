@@ -123,6 +123,15 @@
 
     .cardContainer {
         display: flex;
+        align-items: center;
         /* Show cards on mobile */
     }
+
+    .card {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        /* max-width: 298px; */
+        
+      }
 }
