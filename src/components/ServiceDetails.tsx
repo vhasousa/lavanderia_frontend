@@ -99,8 +99,19 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
     };
 
     const handleServiceDelete = async () => {
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+
         const response = await fetch(`http://localhost:8080/services/${serviceId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         });
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -171,20 +182,28 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
             status: newStatus,
             completed_at: newStatus === 'Finalizado' ? new Date().toISOString() : null,
         };
-    
+
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/services/${service.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(updatedServiceData),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to update the service status');
             }
-    
+
             // Update the local state to reflect the new status and completed_at date
             setService(updatedServiceData);
             onUpdateStatus(serviceId, newStatus); // Assuming you have some logic to handle UI update
@@ -192,7 +211,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
             console.error('Error updating service status:', error);
         }
     };
-    
+
 
     const handleTogglePaidStatus = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const updatedServiceData = {
@@ -200,11 +219,19 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
             is_paid: event.target.checked,
         };
 
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+
         try {
             const response = await fetch(`http://localhost:8080/services/${service.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(updatedServiceData),
             });
@@ -222,13 +249,24 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
         }
     };
 
-
-
     useEffect(() => {
         if (isOpen) {
             const fetchService = async () => {
+                const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+                if (!token) {
+                    console.error('No token found, please login first');
+                    return;
+                }
+
                 try {
-                    const response = await fetch(`http://localhost:8080/services/${serviceId}`);
+                    const response = await fetch(`http://localhost:8080/services/${serviceId}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }

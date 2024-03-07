@@ -1,7 +1,7 @@
 import Select from 'react-select';
 
 import React, { useState, useEffect } from 'react';
-import { LaundryService, Client, Item, CreateClient } from '../models';
+import { CreateClient } from '../models';
 
 import styles from './ClientRegisterModal.module.css'
 
@@ -91,12 +91,18 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
       ...formData,
     };
 
-    console.log(finalFormData)
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+    if (!token) {
+      console.error('No token found, please login first');
+      return;
+    }
 
     const response = await fetch('http://localhost:8080/clients', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui
     });

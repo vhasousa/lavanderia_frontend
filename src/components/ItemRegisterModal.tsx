@@ -29,12 +29,18 @@ const ItemRegisterModal: React.FC<ItemsProps> = ({ isOpen, onClose, onItemRegist
       price: parseFloat(formData.price)
     };
 
-    console.log(finalFormData)
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+      if (!token) {
+        console.error('No token found, please login first');
+        return;
+      }
 
     const response = await fetch('http://localhost:8080/items', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui
     });

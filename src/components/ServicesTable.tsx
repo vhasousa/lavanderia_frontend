@@ -73,8 +73,21 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
   useEffect(() => {
     // Function to fetch services data
     const fetchClient = async () => {
+      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+      if (!token) {
+        console.error('No token found, please login first');
+        return;
+      }
+
       try {
-        const response = await fetch(`http://localhost:8080/services?page=${currentPage}&searchTerm=${searchTerm}&status=${statusFilter}`);
+        const response = await fetch(`http://localhost:8080/services?page=${currentPage}&searchTerm=${searchTerm}&status=${statusFilter}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+            'Content-Type': 'application/json',
+          },
+        });
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

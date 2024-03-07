@@ -35,7 +35,19 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
 
   // Função para carregar clientes e converter para o formato esperado por react-select
   const fetchClients = async () => {
-    const response = await fetch('http://localhost:8080/clients');
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+    if (!token) {
+      console.error('No token found, please login first');
+      return;
+    }
+
+    const response = await fetch('http://localhost:8080/clients', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
     const data = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
     const responseClients: Client[] = data.clients
     const clientOptions: SelectOption[] = responseClients.map(client => ({
@@ -153,11 +165,17 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       finalFormData.estimated_completion_date = utcDateTime.toISOString();
     }
 
-    console.log(finalFormData);
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+    if (!token) {
+      console.error('No token found, please login first');
+      return;
+    }
 
     const response = await fetch('http://localhost:8080/services', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(finalFormData),
@@ -169,7 +187,7 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
     } else {
       try {
         const errorResponse = await response.json();
-        if (errorResponse.error === "Validation failed") { 
+        if (errorResponse.error === "Validation failed") {
           toast.error(errorResponse.details.message);
         } else {
           toast.error("An error occurred. Please try again.");

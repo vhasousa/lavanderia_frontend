@@ -56,8 +56,21 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
   useEffect(() => {
     // Function to fetch services data
     const fetchServices = async () => {
+      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+      if (!token) {
+        console.error('No token found, please login first');
+        return;
+      }
+
       try {
-        const response = await fetch(`http://localhost:8080/clients?page=${currentPage}`);
+        const response = await fetch(`http://localhost:8080/clients?page=${currentPage}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

@@ -60,8 +60,19 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
     };
 
     const handleClientDelete = async () => {
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+
         const response = await fetch(`http://localhost:8080/clients/${clientId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         });
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -122,9 +133,21 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
 
     useEffect(() => {
         if (isOpen) {
+            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+            if (!token) {
+                console.error('No token found, please login first');
+                return;
+            }
             const fetchClient = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8080/clients/${clientId}`);
+                    const response = await fetch(`http://localhost:8080/clients/${clientId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+                    
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }

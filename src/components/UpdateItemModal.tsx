@@ -30,11 +30,17 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
       price: parseFloat(formData.price)
     };
 
-    console.log(finalFormData)
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+      if (!token) {
+        console.error('No token found, please login first');
+        return;
+      }
 
     const response = await fetch(`http://localhost:8080/items/${itemId}`, {
       method: 'PUT',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import Sidebar from '../../components/Sidebar';
 import ServicesTable from '@/components/ServicesTable';
@@ -6,6 +6,7 @@ import ServicesTable from '@/components/ServicesTable';
 import styles from '../../styles/servicos/Services.module.css'
 import ServiceRegisterModal from '@/components/ServiceRegisterModal';
 import { Header } from '@/components/Header';
+import withAuth from '@/components/withAuth';
 
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,4 +73,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default withAuth(Services);
