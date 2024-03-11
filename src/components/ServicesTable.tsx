@@ -6,6 +6,9 @@ import { ArrowLeft, ArrowRight } from 'react-feather'
 import styles from './ServicesTable.module.css'
 import { AuthContext } from '@/context/AuthContext';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Item {
   id: string;
   name: string;
@@ -83,7 +86,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
         return;
       }
 
-      const url = role === 'Client' ? `http://localhost:8080/services/client/${userID}` : `http://localhost:8080/services?page=${currentPage}&searchTerm=${searchTerm}&status=${statusFilter}`
+      const url = role === 'Client' ? `${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/client/${userID}` : `${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services?page=${currentPage}&searchTerm=${searchTerm}&status=${statusFilter}`
 
       console.log(url)
 

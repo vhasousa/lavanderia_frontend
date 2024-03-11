@@ -6,6 +6,9 @@ import styles from '../../styles/precos/Prices.module.css'
 import { Header } from '@/components/HomeHeader';
 import { Footer } from '@/components/Footer';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Item {
   id: string;
   name: string
@@ -40,7 +43,7 @@ const Prices: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
     // Function to fetch items data
     const fetchItems = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/items?page=${currentPage}`);
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items?page=${currentPage}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

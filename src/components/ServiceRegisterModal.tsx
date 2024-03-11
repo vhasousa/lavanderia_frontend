@@ -6,6 +6,9 @@ import { LaundryService, Client, Item } from '../models';
 import styles from './ServiceRegisterModal.module.css'
 import { toast } from 'react-toastify';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface ServicesProps {
   isOpen: boolean;
   onClose: () => void;
@@ -42,7 +45,7 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       return;
     }
 
-    const response = await fetch('http://localhost:8080/clients', {
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -58,7 +61,7 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
   };
 
   const fetchItems = async () => {
-    const response = await fetch('http://localhost:8080/items');
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items`);
     const data = await response.json();
     setItems(data.items);
   };
@@ -172,7 +175,7 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       return;
     }
 
-    const response = await fetch('http://localhost:8080/services', {
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

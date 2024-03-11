@@ -5,6 +5,9 @@ import { ArrowLeft, ArrowRight } from 'react-feather'
 
 import styles from './ClientsTable.module.css'
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Client {
   id: string;
   first_name: string
@@ -64,7 +67,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
       }
 
       try {
-        const response = await fetch(`http://localhost:8080/clients?page=${currentPage}`, {
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients?page=${currentPage}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

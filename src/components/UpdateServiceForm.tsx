@@ -7,6 +7,9 @@ import styles from './UpdateServiceForm.module.css'
 import { X } from 'react-feather';
 import { toast } from 'react-toastify';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Item {
     id: string;
     name: string;
@@ -96,7 +99,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             console.error('No token found, please login first');
             return;
         }
-        const response = await fetch('http://localhost:8080/clients', {
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -112,7 +115,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
     };
 
     const fetchItems = async () => {
-        const response = await fetch('http://localhost:8080/items');
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items`);
         const data = await response.json();
         setItems(data.items);
     };
@@ -152,7 +155,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
         }
 
         // Send PATCH request to update service details
-        const serviceResponse = await fetch(`http://localhost:8080/services/${serviceId}`, {
+        const serviceResponse = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -189,7 +192,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             }));
 
         if (newItems.length > 0) {
-            const itemsResponse = await fetch(`http://localhost:8080/services/${serviceId}/items`, {
+            const itemsResponse = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}/items`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -248,7 +251,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             return;
         }
 
-        const response = await fetch(`http://localhost:8080/services/${serviceId}/items/${itemId}`, {
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}/items/${itemId}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -275,7 +278,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             return;
         }
 
-        const response = await fetch(`http://localhost:8080/services/${serviceId}/items/${serviceItemID}`, {
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}/items/${serviceItemID}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -348,7 +351,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             }
 
             try {
-                const response = await fetch(`http://localhost:8080/services/${serviceId}`, {
+                const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',

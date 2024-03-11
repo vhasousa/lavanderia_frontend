@@ -6,6 +6,9 @@ import { LaundryService, Item, CreateClient } from '../models';
 import styles from './ClientRegisterModal.module.css'
 import { toast } from 'react-toastify';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface ClientsProps {
   isOpen: boolean;
   clientId: string;
@@ -103,7 +106,7 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
       return;
     }
 
-    const response = await fetch(`http://localhost:8080/clients/${clientId}`, {
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -139,7 +142,7 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
         }
 
         try {
-          const response = await fetch(`http://localhost:8080/clients/${clientId}`, {
+          const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',

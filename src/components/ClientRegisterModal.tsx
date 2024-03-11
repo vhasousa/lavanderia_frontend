@@ -46,6 +46,9 @@ const stateOptions: SelectOption[] = [
   { value: 'TO', label: 'TO' },
 ];
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClientRegistered }) => {
   const [selectedState, setSelectedState] = useState<SelectOption | null>(null);
   const [formData, setFormData] = useState<CreateClient>({
@@ -98,7 +101,7 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
       return;
     }
 
-    const response = await fetch('http://localhost:8080/clients', {
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -3,6 +3,9 @@ import { CreateItem } from '../models';
 
 import styles from './ItemRegisterModal.module.css'
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface ItemsProps {
   isOpen: boolean;
   onClose: () => void;
@@ -36,7 +39,7 @@ const ItemRegisterModal: React.FC<ItemsProps> = ({ isOpen, onClose, onItemRegist
         return;
       }
 
-    const response = await fetch('http://localhost:8080/items', {
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

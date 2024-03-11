@@ -5,6 +5,9 @@ import { AlertTriangle, ArrowLeft, ArrowRight, Edit, Trash2 } from 'react-feathe
 import styles from './ItemsTable.module.css'
 import UpdateItemModal from './UpdateItemModal';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Item {
   id: string;
   name: string
@@ -48,7 +51,7 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
     // Function to fetch items data
     const fetchItems = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/items?page=${currentPage}`);
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items?page=${currentPage}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -101,7 +104,7 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
   };
 
   const handleItemDelete = async () => {
-    const response = await fetch(`http://localhost:8080/items/${itemId}`, {
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items/${itemId}`, {
       method: 'DELETE'
     });
     if (!response.ok) {

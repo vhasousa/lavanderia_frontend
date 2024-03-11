@@ -5,6 +5,9 @@ import Switch from 'react-switch';
 import styles from './ServiceDetails.module.css'
 import UpdateServiceForm from './UpdateServiceForm';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Item {
     id: string;
     name: string;
@@ -106,7 +109,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
             return;
         }
 
-        const response = await fetch(`http://localhost:8080/services/${serviceId}`, {
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -191,7 +194,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/services/${service.id}`, {
+            const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${service.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -227,7 +230,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/services/${service.id}`, {
+            const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${service.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -260,7 +263,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
                 }
 
                 try {
-                    const response = await fetch(`http://localhost:8080/services/${serviceId}`, {
+                    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`,

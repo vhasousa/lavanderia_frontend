@@ -5,6 +5,9 @@ import { JwtPayload, jwtDecode } from "jwt-decode";
 import styles from './LoginPage.module.css';
 import { AuthContext } from '@/context/AuthContext';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface CustomJwtPayload extends JwtPayload {
   id: string;
   role: string;
@@ -17,10 +20,11 @@ const LoginPage = () => {
   const { setAuthInfo } = useContext(AuthContext);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents the default form submit action
+    e.preventDefault();
 
+    console.log(NEXT_PUBLIC_APP_URL)
     try {
-      const response = await fetch('http://localhost:8080/login', {
+      const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

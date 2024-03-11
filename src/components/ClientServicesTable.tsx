@@ -7,6 +7,9 @@ import styles from './ClientServicesTable.module.css'
 import { AuthContext } from '@/context/AuthContext';
 import ClientServiceDetail from './ClientServiceDetails';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Item {
   id: string;
   name: string;
@@ -84,7 +87,7 @@ const ClientServicesTable: React.FC<ClientServicesTableProps> = ({ updateTrigger
         return;
       }
 
-      const url = `http://localhost:8080/services/client/${userID}`
+      const url = `${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/client/${userID}`
 
       try {
         const response = await fetch(url, {

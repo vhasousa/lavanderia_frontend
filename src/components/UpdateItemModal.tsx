@@ -3,6 +3,9 @@ import { CreateItem } from '../models';
 
 import styles from './UpdateItemModal.module.css'
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface ItemsProps {
   isOpen: boolean;
   itemId: string;
@@ -37,7 +40,7 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
         return;
       }
 
-    const response = await fetch(`http://localhost:8080/items/${itemId}`, {
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items/${itemId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -59,7 +62,7 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
     if (isOpen) {
       const fetchClient = async () => {
         try {
-          const response = await fetch(`http://localhost:8080/items/${itemId}`);
+          const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items/${itemId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }

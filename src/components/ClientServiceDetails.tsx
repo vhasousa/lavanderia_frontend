@@ -33,6 +33,9 @@ interface ServiceDetailProps {
     serviceId: string;
 }
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 const ClientServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceId }) => {
     const [service, setService] = useState<Service>({
         id: "",
@@ -51,6 +54,9 @@ const ClientServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, se
         number: "",
         phone: "",
     });
+
+    const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+    const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
 
     const statusOptions = ['Separado', 'Lavando', 'Secando', 'Passando', 'Finalizado'];
 
@@ -96,7 +102,7 @@ const ClientServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, se
                     return;
                 }
                 try {
-                    const response = await fetch(`http://localhost:8080/services/${serviceId}`, {
+                    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
                         headers: { 'Authorization': `Bearer ${token}` },
                     });
                     if (!response.ok) {
