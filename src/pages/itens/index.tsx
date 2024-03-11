@@ -4,7 +4,7 @@ import { useState } from 'react';
 import ItemsTable from '@/components/ItemsTable';
 import ItemRegisterModal from '@/components/ItemRegisterModal';
 import { Header } from '@/components/Header';
-import withAuth from '@/components/withAuth';
+import withAdminAuth from '@/components/withAdminAuth';
 
 const Items = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,4 +40,4 @@ const Items = () => {
   );
 };
 
-export default withAuth(Items);
+export default withAdminAuth(Items);

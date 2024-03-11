@@ -4,7 +4,7 @@ import styles from '../../styles/clientes/Clients.module.css';
 import { useState } from 'react';
 import ClientsTable from '@/components/ClientsTable';
 import { Header } from '@/components/Header';
-import withAuth from '@/components/withAuth';
+import withAdminAuth from '@/components/withAdminAuth';
 
 const Clients = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,4 +39,4 @@ const Clients = () => {
   );
 };
 
-export default withAuth(Clients);
+export default withAdminAuth(Clients);

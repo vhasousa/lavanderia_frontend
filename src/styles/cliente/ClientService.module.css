@@ -1,0 +1,88 @@
+.serviceContainer {
+    display: flex;
+}
+
+.serviceContent {
+    flex-grow: 1;
+    padding: 2rem 3rem;
+}
+
+.serviceContentTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filterContainer {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 1rem;
+}
+
+.statusDropdown {
+    background-color: #fff;
+    color: #001A2A;
+    font-weight: 700;
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.serviceContent div h1 {
+    color: #001A2A;
+}
+
+.serviceRegisterButton {
+    border: none;
+    background-color: #4FBBFF;
+    color: #fff;
+    font-weight: 700;
+    padding: 1rem 2rem;
+}
+
+.searchInput {
+    background-color: #fff;
+    color: #001A2A;
+    font-weight: 700;
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .serviceContainer {
+        margin-top: 8vh; /* Adjust the value based on the actual height of your header */
+    }
+
+    .filterContainer {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .searchInput {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .statusDropdown {
+        width: 100%;
+    }
+
+    .serviceContent div h1 {
+        color: #001A2A;
+        font-size: 1.25rem;
+    }
+
+    .serviceRegisterButton {
+        padding: 1rem 1rem;
+    }
+}

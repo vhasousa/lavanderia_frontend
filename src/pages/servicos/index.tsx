@@ -6,7 +6,7 @@ import ServicesTable from '@/components/ServicesTable';
 import styles from '../../styles/servicos/Services.module.css'
 import ServiceRegisterModal from '@/components/ServiceRegisterModal';
 import { Header } from '@/components/Header';
-import withAuth from '@/components/withAuth';
+import withAdminAuth from '@/components/withAdminAuth';
 
 const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,4 +73,4 @@ const Services = () => {
   );
 };
 
-export default withAuth(Services);
+export default withAdminAuth(Services);

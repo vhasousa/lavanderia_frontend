@@ -1,62 +1,109 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { toast } from 'react-toastify';
+import { JwtPayload, jwtDecode } from "jwt-decode";
+import styles from './LoginPage.module.css';
+import { AuthContext } from '@/context/AuthContext';
+
+interface CustomJwtPayload extends JwtPayload {
+  id: string;
+  role: string;
+}
 
 const LoginPage = () => {
-    const router = useRouter();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-  
-    const handleLogin = async (e: React.FormEvent) => {
-      e.preventDefault(); // Prevents the default form submit action
-  
-      try {
-        const response = await fetch('http://localhost:8080/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ username, password }),
+  const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { setAuthInfo } = useContext(AuthContext);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevents the default form submit action
+
+    try {
+      const response = await fetch('http://localhost:8080/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json(); // Parse JSON body
+
+      if (!response.ok) {
+        // Display a toast with the error message
+        toast.error(data.details.message || 'Login failed', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
         });
-  
-        if (!response.ok) {
-          throw new Error('Login failed');
-        }
-  
-        const { token } = await response.json();
-        // Store the token in localStorage or context
-        localStorage.setItem('token', token);
-  
-        // Redirect to /servicos
-        router.push('/servicos');
-      } catch (error) {
-        console.error('Login error:', error);
+        return;
       }
-    };
+
+      const { token } = data;
+      localStorage.setItem('token', token);
+      const decodedToken: CustomJwtPayload = jwtDecode<CustomJwtPayload>(data.token);
+      console.log(decodedToken)
+      const { role, id } = decodedToken;
+
+      setAuthInfo({ userID: id, role: role });
+
+      if (role === 'Admin') {
+        router.push('/servicos');
+      } else if (role === 'Client') {
+        router.push({
+          pathname: '/cliente/servicos',
+        });
+      } else {
+        toast.error('Unauthorized role');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('An error occurred while trying to log in.', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
 
   return (
-    <div>
-      <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
+    <div className={styles.loginContainer}>
+      <div className={styles.loginForm}>
+        <h1>Acessar a plataforma</h1>
+        <form onSubmit={handleLogin}>
+          <div className={styles.formField}>
+            <label htmlFor="username">Usuário</label>
+            <input
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={styles.input}
+            />
+          </div>
+          <div className={styles.formField}>
+            <label htmlFor="password">Senha</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={styles.input}
+            />
+          </div>
+          <button type="submit" className={styles.loginButton}>ENTRAR</button>
+        </form>
+      </div>
     </div>
   );
 };
