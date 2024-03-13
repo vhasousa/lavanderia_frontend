@@ -20,16 +20,16 @@ export function Header() {
 
         <ul className={`${navActive ? 'active' : ''} nav-list`}>
           <li>
-            <a href="/precos">Preços</a>
+            <Link href="/precos">Preços</Link>
           </li>
           <li>
-            <a href="#services">Serviços</a>
+            <Link href="#services">Serviços</Link>
           </li>
           <li>
-            <a href="#contact">Contato</a>
+            <Link href="#contact">Contato</Link>
           </li>
           <li>
-            <a href="#footer">Localização</a>
+            <Link href="#footer">Localização</Link>
           </li>
         </ul>
 
