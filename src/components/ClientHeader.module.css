@@ -1,0 +1,107 @@
+.headerContainer {
+    position: fixed;
+    width: 100%;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    background: #4FBBFF;
+    top: 0px;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #4FBBFF;
+    height: 8vh;
+    max-width: 1200px;
+    margin: 0 2rem;
+}
+
+.link {
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.navList {
+    list-style: none;
+    display: flex;
+    color: #fff;
+    font-weight: 700;
+    height: 100vh;
+}
+
+.navList li {
+    margin-left: 32px;
+}
+
+.mobileMenu {
+    cursor: pointer;
+    display: none;
+}
+
+.navList {
+    position: absolute;
+    top: 8vh;
+    left: 0; /* Changed from right to left */
+    width: 50vw;
+    height: 92vh;
+    background: #4FBBFF;
+    flex-direction: column;
+    transform: translateX(-100%); /* Invert the opening direction */
+    transition: transform 0.3s ease-in;
+    padding: 2rem;
+}
+
+.navList li {
+    margin-left: 0;
+    margin-top: 2rem;
+}
+
+.mobileMenu {
+    display: block;
+}
+
+.navListActive {
+    transform: translateX(0); /* Reset transformation for active state */
+}
+
+@keyframes navLinkFade {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (min-width: 768px) {
+    .headerContainer {
+        display: none;
+    }
+}
+
+.logoutContainer {
+    margin-top: auto;
+    width: 100%;
+}
+
+.logoutButton {
+    background-color: transparent;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.logoutButton:hover {
+    background-color: #367fa9;
+}

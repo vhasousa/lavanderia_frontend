@@ -1,0 +1,45 @@
+.clientContainer {
+    display: flex;
+}
+
+.clientContent {
+    flex-grow: 1;
+    padding: 2rem 3rem;
+}
+
+.clientContentTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clientContent div h1 {
+    color: #001A2A;
+}
+
+.clientRegisterButton {
+    border: none;
+    background-color: #4FBBFF;
+    color: #fff;
+    font-weight: 700;
+    padding: 1rem 2rem;
+}
+
+@media (max-width: 768px) {
+    .clientContainer {
+        margin-top: 8vh; /* Adjust the value based on the actual height of your header */
+    }
+
+    .clientRegisterButton {
+        border: none;
+        background-color: #4FBBFF;
+        color: #fff;
+        font-weight: 700;
+        padding: 1rem 1rem;
+    }
+
+    .clientContent div h1 {
+        color: #001A2A;
+        font-size: 1.5rem;
+    }
+}

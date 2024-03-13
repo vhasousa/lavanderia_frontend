@@ -1,0 +1,37 @@
+.itemContainer {
+    display: flex;
+}
+
+.itemContent {
+    flex-grow: 1;
+    padding: 2rem 3rem;
+}
+
+.itemContentTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.itemContent div h1 {
+    color: #001A2A;
+}
+
+.itemRegisterButton {
+    border: none;
+    background-color: #4FBBFF;
+    color: #fff;
+    font-weight: 700;
+    padding: 1rem 2rem;
+}
+
+@media (max-width: 768px) {
+    .itemContainer {
+        margin-top: 8vh; /* Adjust the value based on the actual height of your header */
+    }
+
+    .itemContentTitle div h1 {
+        color: #001A2A;
+        font-size: 1.5rem;
+    }
+}
