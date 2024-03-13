@@ -101,7 +101,11 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
       return;
     }
 
-    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+
+    const response = await fetch(`${baseUrl}/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

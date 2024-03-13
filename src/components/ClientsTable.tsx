@@ -45,16 +45,16 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
 
     // Verifica se o número tem o DDD + 9 dígitos para celular ou 8 dígitos para fixo
     if (numeros.length === 11) {
-        // Formato de celular com 9 dígitos
-        return numeros.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2$3-$4');
+      // Formato de celular com 9 dígitos
+      return numeros.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2$3-$4');
     } else if (numeros.length === 10) {
-        // Formato de telefone fixo
-        return numeros.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+      // Formato de telefone fixo
+      return numeros.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
     }
 
     // Retorna o número sem formatação se não atender aos critérios acima
     return numero;
-}
+  }
 
   useEffect(() => {
     // Function to fetch services data
@@ -67,13 +67,17 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
       }
 
       try {
-        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients?page=${currentPage}`, {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+          ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+          : process.env.NEXT_PUBLIC_APP_URL;
+          
+        const response = await fetch(`${baseUrl}/clients?page=${currentPage}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
-        
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -142,7 +146,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
           )}
         </tbody>
       </table>
-  
+
       <div className={styles.paginationContainer}>
         <div className={styles.pagination}>
           <button onClick={handlePrevPage} disabled={currentPage === 1 || clients.length === 0}>
@@ -166,7 +170,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
           </div>
         )}
       </div>
-  
+
       {isModalOpen && (
         <ClientDetails
           isOpen={isModalOpen}
@@ -176,7 +180,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
       )}
     </>
   );
-  
+
 };
 
 export default ClientsTable;
