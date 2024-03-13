@@ -238,7 +238,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
         newSelectedItemsWithOptions[index] = {
             ...newSelectedItemsWithOptions[index],
             selectedOption,
-            laundry_item_id: selectedOption ? selectedOption.value : '', // Ensure this line correctly assigns the ID
+            laundry_item_id: selectedOption ? selectedOption.value : '',
         };
         setSelectedItemsWithOptions(newSelectedItemsWithOptions);
     };
@@ -377,7 +377,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                 const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
                     ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
                     : process.env.NEXT_PUBLIC_APP_URL;
-                    
+
                 const response = await fetch(`${baseUrl}/services/${serviceId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -454,7 +454,11 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                                 <div key={index} className={styles.itemContent}>
                                     <Select
                                         name={`selected_item_${index}`}
-                                        options={items.map(it => ({ value: it.id, label: it.name }))}
+                                        options={items
+                                            .filter(it =>
+                                                item.laundry_item_id === it.id || !selectedItemsWithOptions.some(selected => selected.laundry_item_id === it.id)
+                                            )
+                                            .map(it => ({ value: it.id, label: it.name }))}
                                         onChange={(selectedOption: SelectOption | null) => handleSelectedItemSelectChange(index, selectedOption)}
                                         value={item.selectedOption}
                                         placeholder="Selecione um item"
