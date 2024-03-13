@@ -22,12 +22,12 @@ const LoginPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(NEXT_PUBLIC_APP_URL)
     try {
       const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
-        ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
-        : process.env.NEXT_PUBLIC_APP_URL;
-
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+      
+      console.log(baseUrl)
       const response = await fetch(`${baseUrl}/login`, {
         method: 'POST',
         headers: {
