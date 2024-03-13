@@ -24,7 +24,11 @@ const LoginPage = () => {
 
     console.log(NEXT_PUBLIC_APP_URL)
     try {
-      const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/login`, {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+        ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+        : process.env.NEXT_PUBLIC_APP_URL;
+
+      const response = await fetch(`${baseUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

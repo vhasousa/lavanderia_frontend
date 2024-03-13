@@ -45,7 +45,11 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       return;
     }
 
-    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+
+    const response = await fetch(`${baseUrl}/clients`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -61,7 +65,12 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
   };
 
   const fetchItems = async () => {
-    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items`);
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+
+    const response = await fetch(`${baseUrl}/items`);
     const data = await response.json();
     setItems(data.items);
   };
@@ -175,7 +184,11 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       return;
     }
 
-    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+
+    const response = await fetch(`${baseUrl}/services`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -34,12 +34,16 @@ const ItemRegisterModal: React.FC<ItemsProps> = ({ isOpen, onClose, onItemRegist
 
     const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
-      if (!token) {
-        console.error('No token found, please login first');
-        return;
-      }
+    if (!token) {
+      console.error('No token found, please login first');
+      return;
+    }
 
-    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+
+    const response = await fetch(`${baseUrl}/items`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

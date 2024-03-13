@@ -106,7 +106,11 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
       return;
     }
 
-    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+
+    const response = await fetch(`${baseUrl}/clients/${clientId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -142,7 +146,12 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
         }
 
         try {
-          const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
+
+          const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+            ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+            : process.env.NEXT_PUBLIC_APP_URL;
+            
+          const response = await fetch(`${baseUrl}/clients/${clientId}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',

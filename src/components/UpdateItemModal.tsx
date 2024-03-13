@@ -35,12 +35,16 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
 
     const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
-      if (!token) {
-        console.error('No token found, please login first');
-        return;
-      }
+    if (!token) {
+      console.error('No token found, please login first');
+      return;
+    }
 
-    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items/${itemId}`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+
+    const response = await fetch(`${baseUrl}/items/${itemId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -62,7 +66,11 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
     if (isOpen) {
       const fetchClient = async () => {
         try {
-          const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items/${itemId}`);
+          const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+            ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+            : process.env.NEXT_PUBLIC_APP_URL;
+            
+          const response = await fetch(`${baseUrl}/items/${itemId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
