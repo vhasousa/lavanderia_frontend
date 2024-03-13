@@ -6,6 +6,9 @@ import { LaundryService, Item, CreateClient } from '../models';
 import styles from './ClientRegisterModal.module.css'
 import { toast } from 'react-toastify';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface ClientsProps {
   isOpen: boolean;
   clientId: string;
@@ -96,11 +99,17 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
       monthly_date: ""
     };
 
-    console.log(finalFormData)
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
-    const response = await fetch(`http://localhost:8080/clients/${clientId}`, {
+    if (!token) {
+      console.error('No token found, please login first');
+      return;
+    }
+
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
       method: 'PUT',
       headers: {
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui
@@ -111,7 +120,7 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
     } else {
       try {
         const errorResponse = await response.json();
-        if (errorResponse.error === "Validation failed") { 
+        if (errorResponse.error === "Validation failed") {
           toast.error(errorResponse.details.message);
         } else {
           toast.error("An error occurred. Please try again.");
@@ -125,13 +134,24 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
   useEffect(() => {
     if (isOpen) {
       const fetchClient = async () => {
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+          console.error('No token found, please login first');
+          return;
+        }
+
         try {
-          const response = await fetch(`http://localhost:8080/clients/${clientId}`);
+          const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          console.log(data)
 
           // Check if complement.Valid is true and set accordingly
           const complementValue = data.complement.Valid ? data.complement.String : "";

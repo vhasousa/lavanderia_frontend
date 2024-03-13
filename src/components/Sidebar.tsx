@@ -2,7 +2,7 @@ import Link from 'next/link';
 import styles from './Sidebar.module.css';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { FaTshirt } from 'react-icons/fa'; // Example: T-shirt icon for clothes
+import { FaSignOutAlt, FaTshirt } from 'react-icons/fa'; // Example: T-shirt icon for clothes
 import { MdLocalLaundryService } from 'react-icons/md'; // Example: Laundry service icon
 import { FaUser } from 'react-icons/fa'; // Example: Water icon for washing
 
@@ -11,6 +11,11 @@ const Sidebar = () => {
 
   const isActive = (href: string) => {
     return router.pathname === href;
+  };
+
+  const logout = () => {
+    localStorage.removeItem('token'); // Remove the stored token
+    router.push('/'); // Redirect to the home page
   };
 
   const menuItems = [
@@ -41,6 +46,11 @@ const Sidebar = () => {
             </li>
           ))}
         </ul>
+      </div>
+      <div className={styles.logoutContainer}>
+        <button onClick={logout} className={styles.logoutButton}>
+          <FaSignOutAlt className={styles.icon} /> Sair
+        </button>
       </div>
     </div>
   );

@@ -1,13 +1,27 @@
+import { Contact } from '@/components/Contact';
+import { Facilities } from '@/components/Facilities';
+import { HomeContainer } from './styles'
+import { Hero } from '@/components/Hero';
+import LoginPage from '@/components/LoginPage';
+import { Prices } from '@/components/Prices';
+import { Services } from '@/components/Services';
+import { Header } from '@/components/HomeHeader';
 import React from 'react';
-
-import ServiceDetails from '../components/ServiceDetails'
+import { Footer } from '@/components/Footer';
 
 const HomePage = () => {
   return (
     <>
-      <h1>Home page</h1>
+      <Header />
+      <HomeContainer>
+        <Hero />
+        <Facilities />
+        <Prices />
+        <Services />
+        <Contact />
+      </HomeContainer>
+      <Footer />
     </>
-
   );
 };
 

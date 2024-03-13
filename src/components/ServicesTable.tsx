@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import ServiceDetails from './ServiceDetails'
 import { ArrowLeft, ArrowRight } from 'react-feather'
 
 import styles from './ServicesTable.module.css'
+import { AuthContext } from '@/context/AuthContext';
+
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
 
 interface Item {
   id: string;
@@ -30,9 +34,9 @@ interface ServicesResponse {
 }
 
 interface ServicesTableProps {
-  updateTrigger: number;
-  searchTerm: string;
-  statusFilter: string;
+  updateTrigger?: number;
+  searchTerm?: string;
+  statusFilter?: string;
 }
 
 
@@ -43,6 +47,8 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
   const [pageInput, setPageInput] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState("");
+
+  const { userID, role} = useContext(AuthContext);
 
   const openModal = (serviceId: string) => {
     setSelectedServiceId(serviceId);
@@ -73,8 +79,25 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
   useEffect(() => {
     // Function to fetch services data
     const fetchClient = async () => {
+      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+      if (!token) {
+        console.error('No token found, please login first');
+        return;
+      }
+
+      const url = role === 'Client' ? `${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/client/${userID}` : `${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services?page=${currentPage}&searchTerm=${searchTerm}&status=${statusFilter}`
+
+      console.log(url)
+
       try {
-        const response = await fetch(`http://localhost:8080/services?page=${currentPage}&searchTerm=${searchTerm}&status=${statusFilter}`);
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+            'Content-Type': 'application/json',
+          },
+        });
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -87,7 +110,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
     };
 
     fetchClient();
-  }, [updateTrigger, currentPage, searchTerm, statusFilter]);
+  }, [updateTrigger, currentPage, searchTerm, statusFilter, role, userID]);
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));

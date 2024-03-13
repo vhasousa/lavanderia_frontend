@@ -1,0 +1,137 @@
+.serviceTable {
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.serviceTable thead {
+    background-color: #F2F3F3;
+    color: #001A2A;
+}
+
+.serviceTable th {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.serviceTable tr:nth-child(even) {
+    background-color: #F2F3F3;
+}
+
+.serviceTable th {
+    height: 50px;
+}
+
+.serviceTable tbody td:first-child {
+    text-align: left;
+}
+
+.serviceTable tbody td {
+    text-align: center;
+    padding: .75rem 1rem;
+}
+
+.serviceTable tbody tr td:first-child {
+    cursor: pointer;
+}
+
+.paginationContainer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    margin-top: 1rem;
+    flex-direction: column;
+}
+
+
+.pagination {
+    display: flex;
+    align-items: center;
+}
+
+.pagination button {
+    background-color: #CBEBFF;
+    border: none;
+    padding: .5rem;
+}
+
+.pagination span {
+    color: #001A2A;
+    font-size: 1rem;
+    padding: 1rem;
+}
+
+.paginationSearch {
+    margin-top: .5rem;
+}
+
+.paginationSearch input {
+    width: 88px;
+    height: 40px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 16px;
+    color: #333333;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin-right: .5rem;
+}
+
+.paginationSearch button {
+    background-color: #CBEBFF;
+    border: none;
+    padding: .7rem;
+    font-weight: 700;
+}
+
+.cardContainer {
+    display: none;
+    /* Hidden by default */
+    flex-direction: column;
+}
+
+.card {
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.cardHeader {
+    font-weight: bold;
+    color: #001A2A;
+    margin-bottom: 0.5rem;
+}
+
+.cardContent {
+    margin-bottom: 0.25rem;
+}
+
+/* Media Query for Mobile Devices */
+@media screen and (max-width: 768px) {
+    .serviceTable {
+        display: none;
+        /* Hide table on mobile */
+    }
+
+    .cardContainer {
+        display: flex;
+        align-items: center;
+        /* Show cards on mobile */
+    }
+
+    .card {
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+        /* max-width: 298px; */
+        
+      }
+}

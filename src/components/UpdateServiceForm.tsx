@@ -7,6 +7,9 @@ import styles from './UpdateServiceForm.module.css'
 import { X } from 'react-feather';
 import { toast } from 'react-toastify';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Item {
     id: string;
     name: string;
@@ -78,11 +81,11 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
         client_id: service.client_id,
         items: service.items,
         estimated_completion_date: service.estimated_completion_date,
-        is_weight: service.is_weight, // Assuming you have a way to determine this from service data
-        is_piece: service.is_piece, // Assuming you have a way to determine this from service data
-        is_paid: service.is_paid, // Assuming you have a way to determine this from service data
-        completed_at: service.completed_at, // Assuming you have a way to determine this from service data
-        weight: service.weight, // Assuming you have a way to determine this from service data
+        is_weight: service.is_weight,
+        is_piece: service.is_piece,
+        is_paid: service.is_paid,
+        completed_at: service.completed_at,
+        weight: service.weight,
     });
     const [clients, setClients] = useState<SelectOption[]>([]);
     const [selectedItemsWithOptions, setSelectedItemsWithOptions] = useState<Array<SelectedItemWithOption>>([]);
@@ -90,7 +93,18 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
     // Função para carregar clientes e converter para o formato esperado por react-select
     const fetchClients = async () => {
-        const response = await fetch('http://localhost:8080/clients');
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
         const data = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
         const responseClients: Client[] = data.clients
         const clientOptions: SelectOption[] = responseClients.map(client => ({
@@ -101,7 +115,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
     };
 
     const fetchItems = async () => {
-        const response = await fetch('http://localhost:8080/items');
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items`);
         const data = await response.json();
         setItems(data.items);
     };
@@ -133,10 +147,18 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             completed_at: formData.completed_at
         };
 
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+
         // Send PATCH request to update service details
-        const serviceResponse = await fetch(`http://localhost:8080/services/${serviceId}`, {
+        const serviceResponse = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
             method: 'PUT',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(servicePayload),
@@ -149,14 +171,14 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
             try {
                 const errorResponse = await serviceResponse.json();
-                if (errorResponse.error === "Validation failed") { 
-                  toast.error(errorResponse.details.message);
+                if (errorResponse.error === "Validation failed") {
+                    toast.error(errorResponse.details.message);
                 } else {
-                  toast.error("An error occurred. Please try again.");
+                    toast.error("An error occurred. Please try again.");
                 }
-              } catch (error) {
+            } catch (error) {
                 toast.error("An unexpected error occurred. Please try again.");
-              }
+            }
         } else {
             toast.success("Serviço atualizado com sucesso!")
         }
@@ -170,9 +192,10 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             }));
 
         if (newItems.length > 0) {
-            const itemsResponse = await fetch(`http://localhost:8080/services/${serviceId}/items`, {
+            const itemsResponse = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}/items`, {
                 method: 'POST',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ items: newItems }),
@@ -221,9 +244,17 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             item_quantity: newQuantity
         };
 
-        const response = await fetch(`http://localhost:8080/services/${serviceId}/items/${itemId}`, {
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}/items/${itemId}`, {
             method: 'PATCH',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(payload),
@@ -240,8 +271,19 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
 
     const removeItem = async (indexToRemove: number, serviceId: string, serviceItemID: string) => {
-        const response = await fetch(`http://localhost:8080/services/${serviceId}/items/${serviceItemID}`, {
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}/items/${serviceItemID}`, {
             method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         });
 
         if (response.ok) {
@@ -301,8 +343,20 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
     useEffect(() => {
         const fetchService = async () => {
+            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+            if (!token) {
+                console.error('No token found, please login first');
+                return;
+            }
+
             try {
-                const response = await fetch(`http://localhost:8080/services/${serviceId}`);
+                const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }

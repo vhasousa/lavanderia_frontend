@@ -7,6 +7,9 @@ import styles from './ServiceDetails.module.css'
 import UpdateServiceForm from './UpdateServiceForm';
 import UpdateClientModal from './UpdateClientModal';
 
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
+
 interface Client {
     id: string;
     first_name: string
@@ -60,8 +63,19 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
     };
 
     const handleClientDelete = async () => {
-        const response = await fetch(`http://localhost:8080/clients/${clientId}`, {
-            method: 'DELETE'
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+        if (!token) {
+            console.error('No token found, please login first');
+            return;
+        }
+
+        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
         });
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -122,9 +136,21 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
 
     useEffect(() => {
         if (isOpen) {
+            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+            if (!token) {
+                console.error('No token found, please login first');
+                return;
+            }
             const fetchClient = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8080/clients/${clientId}`);
+                    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }

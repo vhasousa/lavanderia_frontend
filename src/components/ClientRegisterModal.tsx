@@ -1,7 +1,7 @@
 import Select from 'react-select';
 
 import React, { useState, useEffect } from 'react';
-import { LaundryService, Client, Item, CreateClient } from '../models';
+import { CreateClient } from '../models';
 
 import styles from './ClientRegisterModal.module.css'
 
@@ -45,6 +45,9 @@ const stateOptions: SelectOption[] = [
   { value: 'SE', label: 'SE' },
   { value: 'TO', label: 'TO' },
 ];
+
+const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
+const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
 
 const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClientRegistered }) => {
   const [selectedState, setSelectedState] = useState<SelectOption | null>(null);
@@ -91,12 +94,18 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
       ...formData,
     };
 
-    console.log(finalFormData)
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
 
-    const response = await fetch('http://localhost:8080/clients', {
+    if (!token) {
+      console.error('No token found, please login first');
+      return;
+    }
+
+    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui
     });
