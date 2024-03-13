@@ -1,6 +1,6 @@
 import { Contact } from '@/components/Contact';
 import { Facilities } from '@/components/Facilities';
-import { HomeContainer } from './styles'
+import { HomeContainer } from '../styles/styles'
 import { Hero } from '@/components/Hero';
 import LoginPage from '@/components/LoginPage';
 import { Prices } from '@/components/Prices';
