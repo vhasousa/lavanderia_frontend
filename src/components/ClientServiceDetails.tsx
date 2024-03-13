@@ -55,9 +55,6 @@ const ClientServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, se
         phone: "",
     });
 
-    const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
-    const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
-
     const statusOptions = ['Separado', 'Lavando', 'Secando', 'Passando', 'Finalizado'];
 
     const getFilledWidth = (currentStatus: string) => {
