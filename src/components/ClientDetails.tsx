@@ -70,7 +70,11 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
             return;
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+            ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+            : process.env.NEXT_PUBLIC_APP_URL;
+
+        const response = await fetch(`${baseUrl}/clients/${clientId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -142,9 +146,14 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
                 console.error('No token found, please login first');
                 return;
             }
+
+            const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+                ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+                : process.env.NEXT_PUBLIC_APP_URL;
+                
             const fetchClient = async () => {
                 try {
-                    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/clients/${clientId}`, {
+                    const response = await fetch(`${baseUrl}/clients/${clientId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json',

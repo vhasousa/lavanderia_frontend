@@ -51,7 +51,11 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
     // Function to fetch items data
     const fetchItems = async () => {
       try {
-        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items?page=${currentPage}`);
+        const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+          ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+          : process.env.NEXT_PUBLIC_APP_URL;
+          
+        const response = await fetch(`${baseUrl}/items?page=${currentPage}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -104,7 +108,10 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
   };
 
   const handleItemDelete = async () => {
-    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/items/${itemId}`, {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+      : process.env.NEXT_PUBLIC_APP_URL;
+    const response = await fetch(`${baseUrl}/items/${itemId}`, {
       method: 'DELETE'
     });
     if (!response.ok) {

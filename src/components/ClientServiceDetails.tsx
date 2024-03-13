@@ -99,7 +99,12 @@ const ClientServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, se
                     return;
                 }
                 try {
-                    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
+
+                    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+                        ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+                        : process.env.NEXT_PUBLIC_APP_URL;
+                        
+                    const response = await fetch(`${baseUrl}/services/${serviceId}`, {
                         headers: { 'Authorization': `Bearer ${token}` },
                     });
                     if (!response.ok) {
@@ -143,17 +148,17 @@ const ClientServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, se
                             <p>{formatPrice(service.total_price)}</p>
                         </div>
                         <div className={styles.statusProgress}>
-                                <div className={styles.statusProgressFilled} style={{ width: getFilledWidth(service.status) }}></div>
-                                {statusOptions.map((statusOption, index) => (
-                                    <button
-                                        key={index}
-                                        className={`${styles.statusButton} ${service.status === statusOption ? styles.activeStatus : ''} ${isStatusFilled(service.status, statusOption) ? styles.filledStatus : ''}`}
-                                        data-status={statusOption}
-                                    >
-                                        <span className={styles.statusIndicator}></span>
-                                    </button>
-                                ))}
-                            </div>
+                            <div className={styles.statusProgressFilled} style={{ width: getFilledWidth(service.status) }}></div>
+                            {statusOptions.map((statusOption, index) => (
+                                <button
+                                    key={index}
+                                    className={`${styles.statusButton} ${service.status === statusOption ? styles.activeStatus : ''} ${isStatusFilled(service.status, statusOption) ? styles.filledStatus : ''}`}
+                                    data-status={statusOption}
+                                >
+                                    <span className={styles.statusIndicator}></span>
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>

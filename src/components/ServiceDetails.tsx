@@ -109,7 +109,11 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
             return;
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+            ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+            : process.env.NEXT_PUBLIC_APP_URL;
+
+        const response = await fetch(`${baseUrl}/services/${serviceId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -194,7 +198,12 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
         }
 
         try {
-            const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${service.id}`, {
+
+            const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+                ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+                : process.env.NEXT_PUBLIC_APP_URL;
+
+            const response = await fetch(`${baseUrl}/services/${service.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -230,7 +239,11 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
         }
 
         try {
-            const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${service.id}`, {
+            const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+                ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+                : process.env.NEXT_PUBLIC_APP_URL;
+
+            const response = await fetch(`${baseUrl}/services/${service.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -263,7 +276,11 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
                 }
 
                 try {
-                    const response = await fetch(`${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/${serviceId}`, {
+                    const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+                        ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+                        : process.env.NEXT_PUBLIC_APP_URL;
+                        
+                    const response = await fetch(`${baseUrl}/services/${serviceId}`, {
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${token}`,
