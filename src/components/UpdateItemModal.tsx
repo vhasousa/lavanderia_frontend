@@ -79,8 +79,6 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          console.log(data)
-
           setFormData(data);
 
         } catch (error) {
