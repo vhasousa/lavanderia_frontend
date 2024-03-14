@@ -24,8 +24,6 @@ const LoginPage = () => {
 
     const baseUrl = `${NEXT_PUBLIC_APP_URL}${NEXT_PUBLIC_APP_PORT ? `:${NEXT_PUBLIC_APP_PORT}` : ''}`;
 
-    console.log(baseUrl)
-
     try {
       const response = await fetch(`${baseUrl}/login`, {
         method: 'POST',
