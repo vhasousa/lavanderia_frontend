@@ -34,6 +34,7 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
   const [selectedItemId, setSelectedItemId] = useState("");
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
   const [itemId, setItemId] = useState("");
+  const [dataUpdateTrigger, setDataUpdateTrigger] = useState(0);
 
   const openModal = (itemId: string) => {
     setSelectedItemId(itemId);
@@ -54,7 +55,7 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
           ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
           : process.env.NEXT_PUBLIC_APP_URL;
-          
+
         const response = await fetch(`${baseUrl}/items?page=${currentPage}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -68,7 +69,7 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
     };
 
     fetchItems();
-  }, [updateTrigger, currentPage]);
+  }, [updateTrigger, currentPage, dataUpdateTrigger]);
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -76,7 +77,7 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
 
   const handleItemUpdated = () => {
     closeModal();
-    // Logic to handle what happens after an item is updated, such as refetching items
+    setDataUpdateTrigger(prev => prev + 1);
   };
 
   const handlePrevPage = () => {
@@ -112,7 +113,11 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
     const response = await fetch(`${baseUrl}/items/${itemId}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      credentials: 'include', // Include credentials to ensure cookies are sent
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -121,9 +126,9 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
 
   const handleConfirmDelete = async () => {
     try {
-      await handleItemDelete(); // Call your existing delete function
-      setIsDeleteConfirmationOpen(false); // Close confirmation modal on successful delete
-      location.reload(); // Reload the page
+      await handleItemDelete();
+      setIsDeleteConfirmationOpen(false);
+      location.reload();
     } catch (error) {
       console.error('Error deleting service:', error);
       setIsDeleteConfirmationOpen(false); // Close confirmation modal on error
@@ -210,7 +215,7 @@ const ItemsTable: React.FC<ItemsTableProps> = ({ updateTrigger }) => {
         isOpen={isModalOpen}
         itemId={selectedItemId}
         onClose={closeModal}
-        onItemRegistered={handleItemUpdated}
+        onItemUpdated={handleItemUpdated}
       />
     </>
   );

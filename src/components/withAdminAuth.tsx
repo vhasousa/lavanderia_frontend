@@ -1,32 +1,48 @@
-import { ComponentType, useContext, useEffect } from 'react';
+import { ComponentType, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { AuthContext } from '@/context/AuthContext';
 
-// Define a generic type for the HOC that can accept any component props
 const withAdminAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
-  // Define a functional component inside your HOC to use Hooks
   const WithAdminAuthComponent = (props: P) => {
     const router = useRouter();
-    const { role } = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(true);
+    const { setRole } = useContext(AuthContext); // Assuming you have a setter for role in your context
 
     useEffect(() => {
-      const token = localStorage.getItem('token');
+      const verifyAuth = async () => {
+        const response = await fetch('/api/auth/status', {
+          credentials: 'include', // Necessary to include the HTTP-only cookie
+        });
 
-      // Redirect if no token or not an admin role
-      if (!token || role !== "Admin") {
-        router.replace('/cliente/servicos');
-      }
-    }, [router, role]);
+        if (!response.ok) {
+          // Handle error or redirect if the endpoint call was unsuccessful
+          router.replace('/login'); // Redirect to login page
+          return;
+        }
 
-    // Render the wrapped component with the provided props
+        const data = await response.json();
+
+        if (data.role !== "Admin") {
+          router.replace('/cliente/servicos'); // Redirect if not admin
+        } else {
+          setRole(data.role); // Update role in AuthContext
+          setIsLoading(false); // Authentication check completed
+        }
+      };
+
+      verifyAuth();
+    }, [router, setRole]);
+
+    if (isLoading) {
+      return <div>Loading...</div>; // Or any other loading indicator
+    }
+
     return <WrappedComponent {...props} />;
   };
 
-  // Set a display name for your higher-order component for easier debugging
   const wrappedComponentName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
   WithAdminAuthComponent.displayName = `withAdminAuth(${wrappedComponentName})`;
 
-  // Return the functional component from your HOC
   return WithAdminAuthComponent;
 };
 

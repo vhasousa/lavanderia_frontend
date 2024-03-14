@@ -39,9 +39,10 @@ interface ServiceDetailProps {
     onClose: () => void;
     serviceId: string;
     onUpdateStatus: (updatedServiceId: string, newStatus: string) => void;
+    updateService: () => void;
 }
 
-const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceId, onUpdateStatus }) => {
+const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceId, onUpdateStatus, updateService }) => {
     const [updateTrigger, setUpdateTrigger] = useState(0); // Initial value is 0
     const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
@@ -102,12 +103,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
     };
 
     const handleServiceDelete = async () => {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-            console.error('No token found, please login first');
-            return;
-        }
 
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
@@ -115,8 +110,8 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
 
         const response = await fetch(`${baseUrl}/services/${serviceId}`, {
             method: 'DELETE',
+            credentials: 'include', // Include credentials to ensure cookies are sent
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
@@ -127,10 +122,10 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
 
     const handleConfirmDelete = async () => {
         try {
-            await handleServiceDelete(); // Call your existing delete function
-            setIsDeleteConfirmationOpen(false); // Close confirmation modal on successful delete
-            onClose(); // Close the service details modal
-            location.reload(); // Reload the page
+            await handleServiceDelete();
+            setIsDeleteConfirmationOpen(false);
+            onClose();
+            location.reload();
         } catch (error) {
             console.error('Error deleting service:', error);
             setIsDeleteConfirmationOpen(false); // Close confirmation modal on error
@@ -143,6 +138,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
 
     const closeEditModal = () => {
         setIsEditModalOpen(false);
+        updateService()
     };
 
     const formatDate = (dateString: string) => {
@@ -190,13 +186,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
             completed_at: newStatus === 'Finalizado' ? new Date().toISOString() : null,
         };
 
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-            console.error('No token found, please login first');
-            return;
-        }
-
         try {
 
             const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
@@ -205,9 +194,9 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
 
             const response = await fetch(`${baseUrl}/services/${service.id}`, {
                 method: 'PUT',
+                credentials: 'include', // Include credentials to ensure cookies are sent
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(updatedServiceData),
             });
@@ -231,13 +220,6 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
             is_paid: event.target.checked,
         };
 
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-            console.error('No token found, please login first');
-            return;
-        }
-
         try {
             const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
                 ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
@@ -245,9 +227,9 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
 
             const response = await fetch(`${baseUrl}/services/${service.id}`, {
                 method: 'PUT',
+                credentials: 'include', // Include credentials to ensure cookies are sent
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(updatedServiceData),
             });
@@ -268,22 +250,15 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, serviceI
     useEffect(() => {
         if (isOpen) {
             const fetchService = async () => {
-                const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-                if (!token) {
-                    console.error('No token found, please login first');
-                    return;
-                }
-
                 try {
                     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
                         ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
                         : process.env.NEXT_PUBLIC_APP_URL;
-                        
+
                     const response = await fetch(`${baseUrl}/services/${serviceId}`, {
+                        credentials: 'include', // Include credentials to ensure cookies are sent
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
                         },
                     });
 

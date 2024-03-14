@@ -38,20 +38,14 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
 
   // Função para carregar clientes e converter para o formato esperado por react-select
   const fetchClients = async () => {
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-    if (!token) {
-      console.error('No token found, please login first');
-      return;
-    }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
 
     const response = await fetch(`${baseUrl}/clients`, {
+      credentials: 'include', // Include credentials to ensure cookies are sent
       headers: {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
     });
@@ -177,21 +171,14 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       finalFormData.estimated_completion_date = utcDateTime.toISOString();
     }
 
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-    if (!token) {
-      console.error('No token found, please login first');
-      return;
-    }
-
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
 
     const response = await fetch(`${baseUrl}/services`, {
       method: 'POST',
+      credentials: 'include', // Include credentials to ensure cookies are sent
       headers: {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(finalFormData),

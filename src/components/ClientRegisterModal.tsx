@@ -94,22 +94,15 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
       ...formData,
     };
 
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-    if (!token) {
-      console.error('No token found, please login first');
-      return;
-    }
-
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
 
     const response = await fetch(`${baseUrl}/clients`, {
       method: 'POST',
+      credentials: 'include', // Include credentials to ensure cookies are sent
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui
     });

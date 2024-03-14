@@ -22,64 +22,42 @@ const LoginPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const baseUrl = `${NEXT_PUBLIC_APP_URL}${NEXT_PUBLIC_APP_PORT ? `:${NEXT_PUBLIC_APP_PORT}` : ''}`;
+
+    console.log(baseUrl)
+
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
-      ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
-      : process.env.NEXT_PUBLIC_APP_URL;
-      
-      console.log(baseUrl)
       const response = await fetch(`${baseUrl}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
+        credentials: 'include', // Include cookies to ensure the HTTP-Only cookie is sent
       });
 
-      const data = await response.json(); // Parse JSON body
-
       if (!response.ok) {
-        // Display a toast with the error message
-        toast.error(data.details.message || 'Login failed', {
-          position: "top-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.error('Login failed');
         return;
       }
 
-      const { token } = data;
-      localStorage.setItem('token', token);
-      const decodedToken: CustomJwtPayload = jwtDecode<CustomJwtPayload>(data.token);
-      console.log(decodedToken)
-      const { role, id } = decodedToken;
+      const userDetailsResponse = await fetch(`${baseUrl}/api/auth/status`, {
+        credentials: 'include', // Include cookies to ensure the HTTP-Only cookie is sent
+      });
 
-      setAuthInfo({ userID: id, role: role });
-
-      if (role === 'Admin') {
-        router.push('/servicos');
-      } else if (role === 'Client') {
-        router.push({
-          pathname: '/cliente/servicos',
-        });
-      } else {
-        toast.error('Unauthorized role');
+      if (!userDetailsResponse.ok) {
+        throw new Error('Failed to fetch user details');
       }
+
+      
+      const { userID, role } = await userDetailsResponse.json();
+
+      setAuthInfo({ role, userID, username });
+
+      role === 'Admin' ? router.push('/servicos') : router.push('/cliente/servicos');
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('An error occurred while trying to log in.', {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error('An error occurred while trying to log in.');
     }
   };
 

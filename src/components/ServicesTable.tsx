@@ -47,6 +47,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
   const [pageInput, setPageInput] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState("");
+  const [dataUpdateTrigger, setDataUpdateTrigger] = useState(0);
 
   const { userID, role} = useContext(AuthContext);
 
@@ -79,21 +80,13 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
   useEffect(() => {
     // Function to fetch services data
     const fetchClient = async () => {
-      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-      if (!token) {
-        console.error('No token found, please login first');
-        return;
-      }
-
       const url = role === 'Client' ? `${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/client/${userID}` : `${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services?page=${currentPage}&searchTerm=${searchTerm}&status=${statusFilter}`
-
-      console.log(url)
 
       try {
         const response = await fetch(url, {
+          method: 'GET',
+          credentials: 'include', // Include credentials to ensure cookies are sent
           headers: {
-            'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
             'Content-Type': 'application/json',
           },
         });
@@ -110,7 +103,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
     };
 
     fetchClient();
-  }, [updateTrigger, currentPage, searchTerm, statusFilter, role, userID]);
+  }, [updateTrigger, currentPage, searchTerm, statusFilter, role, userID, dataUpdateTrigger]);
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
@@ -232,6 +225,7 @@ const ServicesTable: React.FC<ServicesTableProps> = ({ updateTrigger, searchTerm
           onClose={() => setIsModalOpen(false)}
           serviceId={selectedServiceId}
           onUpdateStatus={updateServiceStatus}
+          updateService={() => setDataUpdateTrigger(prev => prev + 1)}
         />
       )}
     </>

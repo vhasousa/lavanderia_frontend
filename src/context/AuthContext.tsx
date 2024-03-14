@@ -1,44 +1,72 @@
-// AuthContext.tsx
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { AuthState, AuthContextType } from '../@types/AuthContextTypes'; // Adjust the import path accordingly
 
 const defaultContextData: AuthContextType = {
   isLoggedIn: false,
   userID: null,
+  username: null, // Added username to the context
   role: null,
   setAuthInfo: () => {},
+  setRole: (role: string | null) => {},
   logout: () => {},
 };
 
 export const AuthContext = createContext<AuthContextType>(defaultContextData);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [authState, setAuthState] = useState<AuthState>({ isLoggedIn: false, userID: null, role: null });
+  const [authState, setAuthState] = useState<AuthState>({ isLoggedIn: false, userID: null, username: null, role: null });
 
   useEffect(() => {
-    const storedAuthInfo = localStorage.getItem('authInfo');
-    if (storedAuthInfo) {
+    const checkAuthStatus = async () => {
       try {
-        const { userID, role } = JSON.parse(storedAuthInfo);
-        setAuthState({ isLoggedIn: true, userID, role });
+        const response = await fetch('/api/auth/status', {
+          credentials: 'include', // Needed to include HTTP-only cookies with the request
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAuthState({
+            isLoggedIn: data.isAuthenticated,
+            userID: data.userID,
+            username: data.username,
+            role: data.role,
+          });
+        } else {
+          throw new Error('Failed to fetch auth status');
+        }
       } catch (error) {
-        console.error('Failed to parse stored authentication info', error);
+        console.error('Error checking authentication status', error);
       }
-    }
+    };
+
+    checkAuthStatus();
   }, []);
 
-  const setAuthInfo = ({ userID, role }: Omit<AuthState, 'isLoggedIn'>) => {
-    setAuthState({ isLoggedIn: true, userID, role });
-    localStorage.setItem('authInfo', JSON.stringify({ userID, role }));
+  const setAuthInfo = ({ userID, username, role }: Omit<AuthState, 'isLoggedIn'>) => {
+    setAuthState({ isLoggedIn: true, userID, username, role });
   };
 
-  const logout = () => {
-    setAuthState({ isLoggedIn: false, userID: null, role: null });
-    localStorage.removeItem('authInfo');
+  const setRole = (role: string | null) => {
+    setAuthState((prevState) => ({ ...prevState, role }));
+  };
+
+  const logout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include', // Needed to include HTTP-only cookies with the request
+      });
+      if (response.ok) {
+        setAuthState({ isLoggedIn: false, userID: null, username: null, role: null });
+      } else {
+        throw new Error('Failed to logout');
+      }
+    } catch (error) {
+      console.error('Error logging out', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ ...authState, setAuthInfo, logout }}>
+    <AuthContext.Provider value={{ ...authState, setAuthInfo, logout, setRole }}>
       {children}
     </AuthContext.Provider>
   );

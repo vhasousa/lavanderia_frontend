@@ -93,20 +93,13 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
     // Função para carregar clientes e converter para o formato esperado por react-select
     const fetchClients = async () => {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-            console.error('No token found, please login first');
-            return;
-        }
-
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
 
         const response = await fetch(`${baseUrl}/clients`, {
+            credentials: 'include', // Include credentials to ensure cookies are sent
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
@@ -129,13 +122,10 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
     };
 
     const convertDate = (date: string) => {
-        // Converte o campo de data e hora de string para um objeto Date
         const localDateTime = new Date(date);
 
-        // Compensa o fuso horário local para obter o tempo UTC
         const utcDateTime = new Date(localDateTime.getTime() + localDateTime.getTimezoneOffset() * 60000);
 
-        // Formata a data e hora para o formato ISO 8601 UTC
         date = utcDateTime.toISOString();
 
         return date
@@ -155,21 +145,14 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             completed_at: formData.completed_at
         };
 
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-            console.error('No token found, please login first');
-            return;
-        }
-
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
 
         const serviceResponse = await fetch(`${baseUrl}/services/${serviceId}`, {
             method: 'PUT',
+            credentials: 'include',
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(servicePayload),
@@ -177,7 +160,6 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
         if (!serviceResponse.ok) {
             // Handle error
-            console.log(serviceResponse)
             console.error('Failed to update service details');
 
             try {
@@ -209,8 +191,8 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
             const itemsResponse = await fetch(`${baseUrl}/services/${serviceId}/items`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ items: newItems }),
@@ -259,21 +241,14 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             item_quantity: newQuantity
         };
 
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-            console.error('No token found, please login first');
-            return;
-        }
-
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
 
         const response = await fetch(`${baseUrl}/services/${serviceId}/items/${itemId}`, {
             method: 'PATCH',
+            credentials: 'include', // Include credentials to ensure cookies are sent
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(payload),
@@ -290,27 +265,19 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
 
     const removeItem = async (indexToRemove: number, serviceId: string, serviceItemID: string) => {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-            console.error('No token found, please login first');
-            return;
-        }
-
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
 
         const response = await fetch(`${baseUrl}/services/${serviceId}/items/${serviceItemID}`, {
             method: 'DELETE',
+            credentials: 'include', // Include credentials to ensure cookies are sent
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
 
         if (response.ok) {
-            // If the API call was successful, remove the item from the UI
             setSelectedItemsWithOptions(prevItems =>
                 prevItems.filter((item, index) => index !== indexToRemove)
             );
@@ -366,21 +333,14 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
     useEffect(() => {
         const fetchService = async () => {
-            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-            if (!token) {
-                console.error('No token found, please login first');
-                return;
-            }
-
             try {
                 const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
                     ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
                     : process.env.NEXT_PUBLIC_APP_URL;
 
                 const response = await fetch(`${baseUrl}/services/${serviceId}`, {
+                    credentials: 'include', // Include credentials to ensure cookies are sent
                     headers: {
-                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     },
                 });

@@ -27,9 +27,10 @@ interface ClientsDetailsProps {
     isOpen: boolean;
     onClose: () => void;
     clientId: string;
+    onClientUpdate: () => void;
 }
 
-const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId }) => {
+const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId, onClientUpdate }) => {
     const [updateTrigger, setUpdateTrigger] = useState(0); // Initial value is 0
     const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
@@ -63,21 +64,14 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
     };
 
     const handleClientDelete = async () => {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-            console.error('No token found, please login first');
-            return;
-        }
-
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
 
         const response = await fetch(`${baseUrl}/clients/${clientId}`, {
             method: 'DELETE',
+            credentials: 'include', // Include credentials to ensure cookies are sent
             headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
         });
@@ -105,6 +99,7 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
     // Include an onClose handler for the edit modal
     const closeEditModal = () => {
         setIsEditModalOpen(false);
+        onClientUpdate();
     };
 
     const formatDate = (dateString: string) => {
@@ -140,22 +135,15 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
 
     useEffect(() => {
         if (isOpen) {
-            const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-            if (!token) {
-                console.error('No token found, please login first');
-                return;
-            }
-
             const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
                 ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
                 : process.env.NEXT_PUBLIC_APP_URL;
-                
+
             const fetchClient = async () => {
                 try {
                     const response = await fetch(`${baseUrl}/clients/${clientId}`, {
+                        credentials: 'include', // Include credentials to ensure cookies are sent
                         headers: {
-                            'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json',
                         },
                     });
@@ -215,7 +203,7 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
                     isOpen={isEditModalOpen}
                     onClose={closeEditModal}
                     clientId={clientId}
-                    onClientRegistered={() => setUpdateTrigger(prev => prev + 1)}
+                    onClientUpdate={() => setUpdateTrigger(prev => prev + 1)}
                 />
             )}
         </>

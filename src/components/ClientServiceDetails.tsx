@@ -93,19 +93,17 @@ const ClientServiceDetail: React.FC<ServiceDetailProps> = ({ isOpen, onClose, se
     useEffect(() => {
         if (isOpen) {
             const fetchService = async () => {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    console.error('No token found, please login first');
-                    return;
-                }
                 try {
 
                     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
                         ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
                         : process.env.NEXT_PUBLIC_APP_URL;
-                        
+
                     const response = await fetch(`${baseUrl}/services/${serviceId}`, {
-                        headers: { 'Authorization': `Bearer ${token}` },
+                        credentials: 'include', // Include credentials to ensure cookies are sent
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
                     });
                     if (!response.ok) {
                         throw new Error('Network response was not ok');

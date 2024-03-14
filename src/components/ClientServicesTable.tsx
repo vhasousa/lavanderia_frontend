@@ -49,7 +49,7 @@ const ClientServicesTable: React.FC<ClientServicesTableProps> = ({ updateTrigger
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState("");
 
-  const { userID, role} = useContext(AuthContext);
+  const { userID, role } = useContext(AuthContext);
 
   const openModal = (serviceId: string) => {
     setSelectedServiceId(serviceId);
@@ -80,19 +80,13 @@ const ClientServicesTable: React.FC<ClientServicesTableProps> = ({ updateTrigger
   useEffect(() => {
     // Function to fetch services data
     const fetchClient = async () => {
-      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-      if (!token) {
-        console.error('No token found, please login first');
-        return;
-      }
 
       const url = `${NEXT_PUBLIC_APP_URL}:${NEXT_PUBLIC_APP_PORT}/services/client/${userID}`
 
       try {
         const response = await fetch(url, {
+          credentials: 'include', // Include credentials to ensure cookies are sent
           headers: {
-            'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
             'Content-Type': 'application/json',
           },
         });

@@ -39,4 +39,4 @@ const Clients = () => {
   );
 };
 
-export default withAdminAuth(Clients);
+export default Clients;

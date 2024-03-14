@@ -40,4 +40,4 @@ const Items = () => {
   );
 };
 
-export default withAdminAuth(Items);
+export default Items;

@@ -73,4 +73,4 @@ const Services = () => {
   );
 };
 
-export default withAdminAuth(Services);
+export default Services;

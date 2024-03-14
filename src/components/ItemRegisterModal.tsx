@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CreateItem } from '../models';
 
 import styles from './ItemRegisterModal.module.css'
+import { toast } from 'react-toastify';
 
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
@@ -32,33 +33,34 @@ const ItemRegisterModal: React.FC<ItemsProps> = ({ isOpen, onClose, onItemRegist
       price: parseFloat(formData.price)
     };
 
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-    if (!token) {
-      console.error('No token found, please login first');
-      return;
-    }
-
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
 
     const response = await fetch(`${baseUrl}/items`, {
       method: 'POST',
+      credentials: 'include', // Include credentials to ensure cookies are sent
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui
     });
     if (response.ok) {
-      // Trate o sucesso do envio
       onItemRegistered();
+      toast.success("Item cadastrado com sucesso!")
 
-      // Limpa o formulário redefinindo o estado de formData para os valores iniciais
       resetForm();
     } else {
-      // Trate o erro
+      try {
+        const errorResponse = await response.json();
+        if (errorResponse.error === "Validation failed") {
+          toast.error(errorResponse.details.message);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 

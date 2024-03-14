@@ -13,7 +13,7 @@ interface ClientsProps {
   isOpen: boolean;
   clientId: string;
   onClose: () => void;
-  onClientRegistered: () => void;
+  onClientUpdate: () => void;
 }
 
 type SelectOption = {
@@ -51,7 +51,7 @@ const stateOptions: SelectOption[] = [
   { value: 'TO', label: 'TO' },
 ];
 
-const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, onClientRegistered }) => {
+const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, onClientUpdate }) => {
   const [updateTrigger, setUpdateTrigger] = useState(0);
   const [selectedState, setSelectedState] = useState<SelectOption | null>(null);
   const [isClosing, setIsClosing] = useState(false);
@@ -71,15 +71,13 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const target = e.target as HTMLInputElement;  // Type assertion here
+    const target = e.target as HTMLInputElement;  
     const { name, value, type } = target;
 
-    // Check if the input type is checkbox
     if (type === 'checkbox') {
-      // For checkbox, use the 'checked' property to set the value
-      setFormData(prev => ({ ...prev, [name]: target.checked }));  // Access 'checked' safely after type assertion
+      setFormData(prev => ({ ...prev, [name]: target.checked }));  
     } else {
-      // For other inputs, use the 'value' property
+      
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
@@ -99,28 +97,21 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
       monthly_date: ""
     };
 
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-    if (!token) {
-      console.error('No token found, please login first');
-      return;
-    }
-
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
 
     const response = await fetch(`${baseUrl}/clients/${clientId}`, {
       method: 'PUT',
+      credentials: 'include', 
       headers: {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(finalFormData), // Usa finalFormData aqui
+      body: JSON.stringify(finalFormData), 
     });
     if (response.ok) {
-      toast.success("Serviço atualizado com sucesso!")
-      onClientRegistered();
+      toast.success("Cliente atualizado com sucesso!")
+      onClientUpdate();
     } else {
       try {
         const errorResponse = await response.json();
@@ -138,22 +129,15 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
   useEffect(() => {
     if (isOpen) {
       const fetchClient = async () => {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-        if (!token) {
-          console.error('No token found, please login first');
-          return;
-        }
-
         try {
 
           const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
-            
+
           const response = await fetch(`${baseUrl}/clients/${clientId}`, {
+            credentials: 'include', 
             headers: {
-              'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
           });
@@ -162,18 +146,15 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
           }
           const data = await response.json();
 
-          // Check if complement.Valid is true and set accordingly
           const complementValue = data.complement.Valid ? data.complement.String : "";
           const landmarkValue = data.landmark.Valid ? data.landmark.String : "";
 
           setFormData({
             ...data,
-            complement: complementValue, // Set the complement value here
-            landmark: landmarkValue, // Set the complement value here
-            // Ensure other fields are set correctly, potentially with similar checks for their validity
+            complement: complementValue, 
+            landmark: landmarkValue, 
           });
 
-          // Find and set the state option that matches the fetched client's state
           const clientStateOption = stateOptions.find(option => option.value === data.state) ?? null;
           setSelectedState(clientStateOption);
         } catch (error) {

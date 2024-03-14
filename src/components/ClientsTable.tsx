@@ -27,6 +27,7 @@ interface ClientsTableProps {
 
 
 const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
+  const [dataUpdateTrigger, setDataUpdateTrigger] = useState(0);
   const [clients, setClients] = useState<Client[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -59,21 +60,14 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
   useEffect(() => {
     // Function to fetch services data
     const fetchServices = async () => {
-      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-      if (!token) {
-        console.error('No token found, please login first');
-        return;
-      }
-
       try {
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
           ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
           : process.env.NEXT_PUBLIC_APP_URL;
-          
+
         const response = await fetch(`${baseUrl}/clients?page=${currentPage}`, {
+          credentials: 'include', // Include credentials to ensure cookies are sent
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -90,7 +84,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
     };
 
     fetchServices();
-  }, [updateTrigger, currentPage]);
+  }, [updateTrigger, currentPage, dataUpdateTrigger]);
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
@@ -176,6 +170,7 @@ const ClientsTable: React.FC<ClientsTableProps> = ({ updateTrigger }) => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           clientId={selectedClientId}
+          onClientUpdate={() => setDataUpdateTrigger(prev => prev + 1)}
         />
       )}
     </>

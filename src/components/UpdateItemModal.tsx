@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CreateItem } from '../models';
 
 import styles from './UpdateItemModal.module.css'
+import { toast } from 'react-toastify';
 
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
@@ -10,10 +11,10 @@ interface ItemsProps {
   isOpen: boolean;
   itemId: string;
   onClose: () => void;
-  onItemRegistered: () => void;
+  onItemUpdated: () => void;
 }
 
-const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItemRegistered }) => {
+const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItemUpdated }) => {
   const [updateTrigger, setUpdateTrigger] = useState(0);
   const [isClosing, setIsClosing] = useState(false);
   const [formData, setFormData] = useState<CreateItem>({
@@ -28,17 +29,12 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
     const finalFormData = {
       ...formData,
       price: parseFloat(formData.price)
     };
-
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-
-    if (!token) {
-      console.error('No token found, please login first');
-      return;
-    }
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
@@ -46,19 +42,27 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
 
     const response = await fetch(`${baseUrl}/items/${itemId}`, {
       method: 'PUT',
+      credentials: 'include', // Include credentials to ensure cookies are sent
       headers: {
-        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(finalFormData), // Usa finalFormData aqui
     });
-    if (response.ok) {
-      // Trate o sucesso do envio
-      onItemRegistered();
 
-      // Limpa o formulário redefinindo o estado de formData para os valores iniciais
+    if (response.ok) {
+      toast.success("Item atualizado com sucesso!")
+      onItemUpdated();
     } else {
-      // Trate o erro
+      try {
+        const errorResponse = await response.json();
+        if (errorResponse.error === "Validation failed") {
+          toast.error(errorResponse.details.message);
+        } else {
+          toast.error("An error occurred. Please try again.");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
@@ -69,7 +73,7 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
           const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
-            
+
           const response = await fetch(`${baseUrl}/items/${itemId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -109,7 +113,7 @@ const UpdateItemModal: React.FC<ItemsProps> = ({ isOpen, itemId, onClose, onItem
               <label htmlFor="price">Preço Unitário:</label>
               <input type="number" id="price" name="price" required onChange={handleChange} value={formData.price} />
             </div>
-            <button type="submit" className={styles.registerItemButton}>Cadastrar item</button>
+            <button type="submit" className={styles.registerItemButton}>Atualizar item</button>
           </form>
         </div>
       </div>
