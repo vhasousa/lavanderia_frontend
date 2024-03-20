@@ -133,7 +133,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+    
         const servicePayload = {
             client_id: formData.client_id,
             estimated_completion_date: convertDate(formData.estimated_completion_date),
@@ -144,11 +144,11 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             is_paid: formData.is_paid,
             completed_at: formData.completed_at
         };
-
+    
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
-
+    
         const serviceResponse = await fetch(`${baseUrl}/services/${serviceId}`, {
             method: 'PUT',
             credentials: 'include',
@@ -157,25 +157,20 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             },
             body: JSON.stringify(servicePayload),
         });
-
+    
         if (!serviceResponse.ok) {
             // Handle error
             console.error('Failed to update service details');
-
-            try {
-                const errorResponse = await serviceResponse.json();
-                if (errorResponse.error === "Validation failed") {
-                    toast.error(errorResponse.details.message);
-                } else {
-                    toast.error("An error occurred. Please try again.");
-                }
-            } catch (error) {
-                toast.error("An unexpected error occurred. Please try again.");
-            }
         } else {
             toast.success("Serviço atualizado com sucesso!")
         }
-
+    
+        for (const item of selectedItemsWithOptions) {
+            if (item.isFromService) {
+                await updateItemQuantity(serviceId, item.laundry_item_id, item.item_quantity);
+            }
+        }
+    
         const newItems = selectedItemsWithOptions
             .filter(item => !item.isFromService) // Filter out items that are from the service
             .map(item => ({
@@ -183,12 +178,8 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                 item_quantity: item.item_quantity,
                 observation: ""
             }));
-
+    
         if (newItems.length > 0) {
-            const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
-                ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
-                : process.env.NEXT_PUBLIC_APP_URL;
-
             const itemsResponse = await fetch(`${baseUrl}/services/${serviceId}/items`, {
                 method: 'POST',
                 credentials: 'include',
@@ -197,15 +188,16 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                 },
                 body: JSON.stringify({ items: newItems }),
             });
-
+    
             if (!itemsResponse.ok) {
                 // Handle error
                 console.error('Failed to add new items');
             }
         }
-
-        onServiceRegistered()
+    
+        onServiceRegistered();
     };
+    
 
     // Função para lidar com a mudança de seleção do cliente
     const handleClientSelectChange = (selectedOption: SelectOption | null) => {
@@ -431,11 +423,6 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                                         value={item.item_quantity}
                                         placeholder="1"
                                         onChange={e => handleItemQuantityChange(index, e.target.value)}
-                                        onBlur={e => {
-                                            if (item.isFromService) { // Only update if the item is from the service
-                                                updateItemQuantity(serviceId, item.laundry_item_id, parseInt(e.target.value, 10));
-                                            }
-                                        }}
                                     />
                                     <button type="button" onClick={() => removeItem(index, serviceId, item.laundry_item_id)}>
                                         X
