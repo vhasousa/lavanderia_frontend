@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import styles from './Header.module.css'; // Import the CSS module
 
 import Image from 'next/image';
 import { MdLocalLaundryService } from 'react-icons/md';
-import { FaTshirt, FaUser } from 'react-icons/fa';
+import { FaSignOutAlt, FaTshirt, FaUser } from 'react-icons/fa';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { AuthContext } from '@/context/AuthContext';
 
 export function Header() {
     const [navActive, setNavActive] = useState(false);
+    const { logout } = useContext(AuthContext);
 
     const router = useRouter();
 
@@ -34,6 +36,12 @@ export function Header() {
                             </Link>
                         </li>
                     ))}
+
+                    <div className={styles.logoutContainer}>
+                        <button onClick={logout} className={styles.logoutButton}>
+                            <FaSignOutAlt className={styles.icon} /> Sair
+                        </button>
+                    </div>
                 </ul>
 
                 <div onClick={() => setNavActive(!navActive)} className={styles.mobileMenu}>
