@@ -15,7 +15,7 @@ export function ClientHeader() {
     const logout = () => {
         localStorage.removeItem('token');
         router.push('/');
-      };
+    };
 
     return (
         <header className={styles.headerContainer}>

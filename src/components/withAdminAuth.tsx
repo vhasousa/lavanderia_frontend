@@ -9,8 +9,12 @@ const withAdminAuth = <P extends object>(WrappedComponent: ComponentType<P>) => 
     const { setRole } = useContext(AuthContext); // Assuming you have a setter for role in your context
 
     useEffect(() => {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+        ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+        : process.env.NEXT_PUBLIC_APP_URL;
+
       const verifyAuth = async () => {
-        const response = await fetch('/api/auth/status', {
+        const response = await fetch(`${baseUrl}/api/auth/status`, {
           credentials: 'include', // Necessary to include the HTTP-only cookie
         });
 
@@ -23,7 +27,7 @@ const withAdminAuth = <P extends object>(WrappedComponent: ComponentType<P>) => 
         const data = await response.json();
 
         if (data.role !== "Admin") {
-          router.replace('/cliente/servicos'); // Redirect if not admin
+          router.replace('/'); // Redirect if not admin
         } else {
           setRole(data.role); // Update role in AuthContext
           setIsLoading(false); // Authentication check completed
