@@ -63,7 +63,8 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
     postal_code: "",
     number: "",
     complement: "",
-    landmark: ""
+    landmark: "",
+    monthly_date: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -94,6 +95,8 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
       ...formData,
     };
 
+    console.log(finalFormData)
+
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
@@ -117,6 +120,11 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
     }
   };
 
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFormData(prev => ({ ...prev, monthly_date: value }));
+  };
+
   const resetForm = () => {
     setFormData({
       first_name: "",
@@ -130,7 +138,8 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
       postal_code: "",
       number: "",
       complement: "",
-      landmark: ""
+      landmark: "",
+      monthly_date: "",
     });
   };
 
@@ -208,6 +217,12 @@ const ClientRegisterModal: React.FC<ClientsProps> = ({ isOpen, onClose, onClient
               <label htmlFor="is_monthly">Mensal:</label>
               <input type="checkbox" id="is_monthly" name="is_monthly" onChange={handleChange} />
             </div>
+            {formData.is_monthly && (
+              <div>
+                <label htmlFor="monthly_date">Data Mensal:</label>
+                <input type="date" id="monthly_date" name="monthly_date" onChange={handleDateChange} value={formData.monthly_date} />
+              </div>
+            )}
             <button type="submit" className={styles.registerClientButton}>Cadastrar cliente</button>
           </form>
         </div>

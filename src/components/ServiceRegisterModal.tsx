@@ -6,9 +6,6 @@ import { LaundryService, Client, Item } from '../models';
 import styles from './ServiceRegisterModal.module.css'
 import { toast } from 'react-toastify';
 
-const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
-const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
-
 interface ServicesProps {
   isOpen: boolean;
   onClose: () => void;
@@ -24,7 +21,7 @@ type SelectOption = {
 const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServiceRegistered }) => {
 
   const [clients, setClients] = useState<SelectOption[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<SelectOption[]>([]);
   const [selectedItems, setSelectedItems] = useState<Array<{ laundry_item_id: string; item_quantity: number }>>([]);
   const [selectedItemsWithOptions, setSelectedItemsWithOptions] = useState<Array<{ laundry_item_id: string; item_quantity: number; selectedOption: SelectOption | null }>>([]);
   const [formData, setFormData] = useState<LaundryService>({
@@ -34,39 +31,42 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
     weight: 0,
     client_id: '',
     items: [],
+    is_monthly: false,
   });
 
-  // Função para carregar clientes e converter para o formato esperado por react-select
   const fetchClients = async () => {
-
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
 
     const response = await fetch(`${baseUrl}/clients`, {
-      credentials: 'include', // Include credentials to ensure cookies are sent
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-    const data = await response.json(); // Supondo que `Client` seja o tipo dos seus clientes
+    const data = await response.json();
     const responseClients: Client[] = data.clients
     const clientOptions: SelectOption[] = responseClients.map(client => ({
-      value: client.id.toString(), // Garante que o valor seja uma string
-      label: `${client.first_name} ${client.last_name}` // Ajuste conforme necessário
+      value: client.id.toString(),
+      label: `${client.first_name} ${client.last_name}`
     }));
     setClients(clientOptions);
   };
 
   const fetchItems = async () => {
-
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
       ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
       : process.env.NEXT_PUBLIC_APP_URL;
 
     const response = await fetch(`${baseUrl}/items`);
     const data = await response.json();
-    setItems(data.items);
+    const responseItems: Item[] = data.items
+    const itemOptions: SelectOption[] = responseItems.map(item => ({
+      value: item.id.toString(),
+      label: `${item.name}`
+    }));
+    setItems(itemOptions);
   };
 
   const addItem = () => {
@@ -84,39 +84,33 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
 
   const handleQuantityBlur = (index: number, value: string) => {
     const newItems = [...selectedItems];
-    // Converte para número ou usa o valor padrão '1' se estiver vazio ou inválido
     const convertedValue = value === '' ? 1 : parseInt(value, 10);
     newItems[index] = { ...newItems[index], item_quantity: isNaN(convertedValue) ? 1 : convertedValue };
     setSelectedItems(newItems);
   };
 
-  // Função genérica para lidar com mudanças nos inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
-    // Verifica se o campo alterado é o campo de peso
     if (name === 'weight') {
-      // Converte o valor do campo de peso para float e atualiza o formData
       const weightFloat = parseFloat(value);
       setFormData(prev => ({ ...prev, [name]: weightFloat }));
     } else {
-      // Para outros campos, apenas atualiza o valor diretamente
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
 
-  // Função específica para lidar com a mudança do tipo de serviço (por peso ou por peça)
   const handleServiceTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const serviceType = e.target.value;
     setFormData(prev => ({
       ...prev,
       is_weight: serviceType === 'weight',
+      is_monthly: serviceType === 'monthly',
       is_piece: serviceType === 'piece',
-      weight: serviceType === 'weight' ? prev.weight : 0, // Reset weight if not 'weight' type
+      weight: serviceType === 'weight' ? prev.weight : 0,
     }));
   };
 
-  // Função para lidar com a mudança de seleção do cliente
   const handleClientSelectChange = (selectedOption: SelectOption | null) => {
     setFormData(prev => ({
       ...prev,
@@ -153,21 +147,16 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       item_quantity: item.item_quantity,
     }));
 
-    // Certifique-se de que formData contém todos os dados atualizados, incluindo selectedItems
     const finalFormData = {
       ...formData,
       items: itemsToSend
     };
 
-    // Verifica se o campo de data e hora está preenchido
     if (finalFormData.estimated_completion_date) {
-      // Converte o campo de data e hora de string para um objeto Date
       const localDateTime = new Date(finalFormData.estimated_completion_date);
 
-      // Compensa o fuso horário local para obter o tempo UTC
       const utcDateTime = new Date(localDateTime.getTime() + localDateTime.getTimezoneOffset() * 60000);
 
-      // Formata a data e hora para o formato ISO 8601 UTC
       finalFormData.estimated_completion_date = utcDateTime.toISOString();
     }
 
@@ -202,12 +191,9 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
   };
 
   const handleSelectedItemSelectChange = (index: number, selectedOption: SelectOption | null) => {
-    const newSelectedItemsWithOptions = [...selectedItemsWithOptions];
-    newSelectedItemsWithOptions[index] = {
-      ...newSelectedItemsWithOptions[index],
-      selectedOption
-    };
-    setSelectedItemsWithOptions(newSelectedItemsWithOptions);
+    setSelectedItemsWithOptions(prevItems =>
+      prevItems.map((item, idx) => idx === index ? { ...item, selectedOption } : item)
+    );
   };
 
   const handleItemQuantityChange = (index: number, value: string) => {
@@ -228,12 +214,12 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
       weight: 0,
       client_id: '',
       items: [],
+      is_monthly: false,
     });
     setSelectedItems([]);
     setSelectedItemsWithOptions([]);
   };
 
-  // Carrega clientes e itens na montagem do componente
   useEffect(() => {
     fetchClients();
     fetchItems();
@@ -271,7 +257,7 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
                 <div key={index} className={styles.itemContent}>
                   <Select
                     name={`selected_item_${index}`}
-                    options={items.map(it => ({ value: it.id, label: it.name }))}
+                    options={items}
                     onChange={(selectedOption: SelectOption | null) => handleSelectedItemSelectChange(index, selectedOption)}
                     value={item.selectedOption}
                     placeholder="Selecione um item"
@@ -301,6 +287,10 @@ const ServiceRegisterModal: React.FC<ServicesProps> = ({ isOpen, onClose, onServ
             </div>
 
             <div className={styles.serviceRegisterType}>
+              <label>
+                <input type="radio" name="service_type" value="monthly" checked={formData.is_monthly} onChange={handleServiceTypeChange} />
+                Mensal
+              </label>
               <label>
                 <input type="radio" name="service_type" value="weight" checked={formData.is_weight} onChange={handleServiceTypeChange} />
                 Por Peso

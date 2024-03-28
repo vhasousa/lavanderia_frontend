@@ -2,6 +2,7 @@
 export interface LaundryService {
   estimated_completion_date: string;
   is_weight: boolean;
+  is_monthly: boolean;
   is_piece: boolean;
   weight: number;
   client_id: string;
@@ -43,4 +44,5 @@ export interface CreateClient {
   number: string;
   complement: string;
   landmark: string;
+  monthly_date: string,
 }
