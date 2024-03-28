@@ -7,8 +7,6 @@ import styles from './UpdateServiceForm.module.css'
 import { X } from 'react-feather';
 import { toast } from 'react-toastify';
 
-const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
-const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
 
 interface Item {
     id: string;
@@ -24,6 +22,7 @@ interface Service {
     total_price: number;
     is_paid: boolean;
     is_weight: boolean;
+    is_monthly: boolean;
     weight: number;
     is_piece: boolean;
     estimated_completion_date: string
@@ -67,6 +66,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             total_price: 0,
             is_paid: false,
             is_weight: false,
+            is_monthly: false,
             weight: 0,
             is_piece: false,
             estimated_completion_date: "",
@@ -81,6 +81,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
         client_id: service.client_id,
         items: service.items,
         estimated_completion_date: service.estimated_completion_date,
+        is_monthly: service.is_monthly,
         is_weight: service.is_weight,
         is_piece: service.is_piece,
         is_paid: service.is_paid,
@@ -89,7 +90,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
     });
     const [clients, setClients] = useState<SelectOption[]>([]);
     const [selectedItemsWithOptions, setSelectedItemsWithOptions] = useState<Array<SelectedItemWithOption>>([]);
-    const [items, setItems] = useState<Item[]>([]);
+    const [items, setItems] = useState<SelectOption[]>([]);
 
     // Função para carregar clientes e converter para o formato esperado por react-select
     const fetchClients = async () => {
@@ -114,12 +115,18 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
     const fetchItems = async () => {
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
-            ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
-            : process.env.NEXT_PUBLIC_APP_URL;
+          ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+          : process.env.NEXT_PUBLIC_APP_URL;
+    
         const response = await fetch(`${baseUrl}/items`);
         const data = await response.json();
-        setItems(data.items);
-    };
+        const responseItems: Item[] = data.items
+        const itemOptions: SelectOption[] = responseItems.map(item => ({
+          value: item.id.toString(),
+          label: `${item.name}`
+        }));
+        setItems(itemOptions);
+      };
 
     const convertDate = (date: string) => {
         const localDateTime = new Date(date);
@@ -133,22 +140,23 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-    
+
         const servicePayload = {
             client_id: formData.client_id,
             estimated_completion_date: convertDate(formData.estimated_completion_date),
             is_piece: formData.is_piece,
             is_weight: formData.is_weight,
+            is_monthly: formData.is_monthly,
             weight: formData.weight,
             status: formData.status,
             is_paid: formData.is_paid,
             completed_at: formData.completed_at
         };
-    
+
         const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
-    
+
         const serviceResponse = await fetch(`${baseUrl}/services/${serviceId}`, {
             method: 'PUT',
             credentials: 'include',
@@ -157,20 +165,20 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
             },
             body: JSON.stringify(servicePayload),
         });
-    
+
         if (!serviceResponse.ok) {
             // Handle error
             console.error('Failed to update service details');
         } else {
             toast.success("Serviço atualizado com sucesso!")
         }
-    
+
         for (const item of selectedItemsWithOptions) {
             if (item.isFromService) {
                 await updateItemQuantity(serviceId, item.laundry_item_id, item.item_quantity);
             }
         }
-    
+
         const newItems = selectedItemsWithOptions
             .filter(item => !item.isFromService) // Filter out items that are from the service
             .map(item => ({
@@ -178,7 +186,7 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                 item_quantity: item.item_quantity,
                 observation: ""
             }));
-    
+
         if (newItems.length > 0) {
             const itemsResponse = await fetch(`${baseUrl}/services/${serviceId}/items`, {
                 method: 'POST',
@@ -188,16 +196,16 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                 },
                 body: JSON.stringify({ items: newItems }),
             });
-    
+
             if (!itemsResponse.ok) {
                 // Handle error
                 console.error('Failed to add new items');
             }
         }
-    
+
         onServiceRegistered();
     };
-    
+
 
     // Função para lidar com a mudança de seleção do cliente
     const handleClientSelectChange = (selectedOption: SelectOption | null) => {
@@ -286,31 +294,27 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
         ]);
     };
 
-    // Função genérica para lidar com mudanças nos inputs
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-        // Verifica se o campo alterado é o campo de peso
         if (name === 'weight') {
-            // Converte o valor do campo de peso para float e atualiza o formData
             const weightFloat = parseFloat(value);
             setFormData(prev => ({ ...prev, [name]: weightFloat }));
         } else {
-            // Para outros campos, apenas atualiza o valor diretamente
             setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
 
-    // Função específica para lidar com a mudança do tipo de serviço (por peso ou por peça)
     const handleServiceTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const serviceType = e.target.value;
         setFormData(prev => ({
-            ...prev,
-            is_weight: serviceType === 'weight',
-            is_piece: serviceType === 'piece',
-            weight: serviceType === 'weight' ? prev.weight : 0, // Reset weight if not 'weight' type
+          ...prev,
+          is_weight: serviceType === 'weight',
+          is_monthly: serviceType === 'monthly',
+          is_piece: serviceType === 'piece',
+          weight: serviceType === 'weight' ? prev.weight : 0, // Reset weight if not 'weight' type
         }));
-    };
+      };
 
     const convertUTCDateToLocalDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -346,13 +350,14 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                     ...prevFormData,
                     client_id: data.service.client_id,
                     estimated_completion_date: convertUTCDateToLocalDate(data.service.estimated_completion_date),
-                    is_weight: data.service.is_weight, // Assuming you have a way to determine this from service data
-                    is_piece: data.service.is_piece, // Assuming you have a way to determine this from service data
+                    is_monthly: data.service.is_monthly,
+                    is_weight: data.service.is_weight,
+                    is_piece: data.service.is_piece,
                     weight: data.service.weight,
                     status: data.service.status,
                     items: data.service.items,
-                    is_paid: data.service.is_paid, // Assuming you have a way to determine this from service data
-                    completed_at: data.service.completed_at, // Assuming you have a way to determine this from service data
+                    is_paid: data.service.is_paid,
+                    completed_at: data.service.completed_at,
                 }));
 
 
@@ -405,17 +410,13 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                                 <div key={index} className={styles.itemContent}>
                                     <Select
                                         name={`selected_item_${index}`}
-                                        options={items
-                                            .filter(it =>
-                                                item.laundry_item_id === it.id || !selectedItemsWithOptions.some(selected => selected.laundry_item_id === it.id)
-                                            )
-                                            .map(it => ({ value: it.id, label: it.name }))}
+                                        options={items}
                                         onChange={(selectedOption: SelectOption | null) => handleSelectedItemSelectChange(index, selectedOption)}
                                         value={item.selectedOption}
                                         placeholder="Selecione um item"
                                         isSearchable
-                                        isClearable={!item.isFromService} // Prevent clearing if the item is from the service
-                                        isDisabled={item.isFromService} // Disable selection if the item is from the service
+                                        isClearable={!item.isFromService}
+                                        isDisabled={item.isFromService}
                                     />
                                     <input
                                         type="number"
@@ -439,6 +440,10 @@ const UpdateServiceForm: React.FC<EditServiceModalProps> = ({ isOpen, onClose, s
                         </div>
 
                         <div className={styles.serviceRegisterType}>
+                            <label>
+                                <input type="radio" name="service_type" value="monthly" checked={formData.is_monthly} onChange={handleServiceTypeChange} />
+                                Mensal
+                            </label>
                             <label>
                                 <input type="radio" name="service_type" value="weight" checked={formData.is_weight} onChange={handleServiceTypeChange} />
                                 Por Peso

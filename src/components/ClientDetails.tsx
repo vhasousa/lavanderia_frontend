@@ -1,14 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useService } from '../context/ServiceContext';
-import { useRouter } from 'next/router';
 import { AlertTriangle, X } from 'react-feather'
 
-import styles from './ServiceDetails.module.css'
-import UpdateServiceForm from './UpdateServiceForm';
+import styles from './ClientDetails.module.css'
 import UpdateClientModal from './UpdateClientModal';
+import { toast } from 'react-toastify';
 
-const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
-const NEXT_PUBLIC_APP_PORT = process.env.NEXT_PUBLIC_APP_PORT;
 
 interface Client {
     id: string;
@@ -21,6 +17,11 @@ interface Client {
     state: string
     postal_code: string
     number: string
+    is_monthly: boolean;
+    monthly_date?: {
+        Time: string;
+        Valid: boolean;
+    };
 }
 
 interface ClientsDetailsProps {
@@ -33,6 +34,7 @@ interface ClientsDetailsProps {
 const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId, onClientUpdate }) => {
     const [updateTrigger, setUpdateTrigger] = useState(0); // Initial value is 0
     const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+    const [isRenewConfirmationOpen, setIsRenewConfirmationOpen] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const [client, setClient] = useState<Client>(
         {
@@ -46,6 +48,11 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
             postal_code: "",
             state: "",
             street: "",
+            is_monthly: false,
+            monthly_date: {
+                Time: "",
+                Valid: true
+            }
         }
     );
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -107,14 +114,18 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
         };
-        // Parse the date string and convert to local time
-        const date = new Date(dateString);
-        return date.toLocaleDateString('pt-BR', options).replace(',', '');
+        
+        const parts = dateString.split('-');
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+        const day = parseInt(parts[2], 10);
+    
+        const date = new Date(year, month, day);
+    
+        return date.toLocaleDateString('pt-BR', options);
     };
+    
 
     const formatarTelefone = (numero: string): string => {
         // Remove caracteres não numéricos
@@ -132,6 +143,42 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
         // Retorna o número sem formatação se não atender aos critérios acima
         return numero;
     }
+
+    const handleRenew = async () => {
+        if (client.monthly_date) {
+            const currentDate = new Date(client.monthly_date.Time);
+            const newDate = new Date(currentDate.setDate(currentDate.getDate() + 30));
+            const renewData = {
+                renewal_date: newDate
+            }
+
+            const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
+                ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
+                : process.env.NEXT_PUBLIC_APP_URL;
+
+            try {
+                const response = await fetch(`${baseUrl}/clients/${clientId}/renew`, {
+                    method: 'PATCH',
+                    credentials: 'include',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(renewData),
+                  });
+
+                if (!response.ok) {
+                    toast.error("Erro ao renovar mensalidade");
+                } else {
+                    toast.success("Assinatura atualizada com sucesso!");
+                    setClient({ ...client, monthly_date: { ...client.monthly_date, Time: newDate.toISOString() } });
+                    setIsRenewConfirmationOpen(false); // Fecha o pop-up após a renovação
+                }
+            } catch (error) {
+                console.error('There was a problem with your fetch operation:', error);
+            }
+        }
+    };
+
 
     useEffect(() => {
         if (isOpen) {
@@ -193,6 +240,23 @@ const ClientsTable: React.FC<ClientsDetailsProps> = ({ isOpen, onClose, clientId
                                 <h1>Cliente: {`${client.first_name} ${client.last_name}`}</h1>
                                 <p>Contato: {formatarTelefone(client.phone)}</p>
                                 <p>Endereço: {`${client.street}, ${client.number}`}</p>
+                                {client.is_monthly && client.monthly_date && client.monthly_date.Valid && (
+                                    <p>Vencimento mensalidade: {formatDate(client.monthly_date.Time)}</p>
+                                )}
+                                {client.is_monthly && (
+                                    <button className={styles.renewButton} onClick={() => setIsRenewConfirmationOpen(true)}>Renovar</button>
+                                )}
+
+                                {isRenewConfirmationOpen && (
+                                    <div className={styles.confirmationModal}>
+                                        <div className={styles.confirmationModalContent}>
+                                            <p>Confirma a renovação da assinatura por mais 30 dias?</p>
+                                            <button className={styles.confirmationButton} onClick={handleRenew}>Confirmar</button>
+                                            <button className={styles.cancelButton} onClick={() => setIsRenewConfirmationOpen(false)}>Cancelar</button>
+                                        </div>
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                     )}

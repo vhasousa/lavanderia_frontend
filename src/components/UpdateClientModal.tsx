@@ -67,17 +67,18 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
     postal_code: "",
     number: "",
     complement: "",
-    landmark: ""
+    landmark: "",
+    monthly_date: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const target = e.target as HTMLInputElement;  
+    const target = e.target as HTMLInputElement;
     const { name, value, type } = target;
 
     if (type === 'checkbox') {
-      setFormData(prev => ({ ...prev, [name]: target.checked }));  
+      setFormData(prev => ({ ...prev, [name]: target.checked }));
     } else {
-      
+
       setFormData(prev => ({ ...prev, [name]: value }));
     }
   };
@@ -94,7 +95,6 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
 
     const finalFormData = {
       ...formData,
-      monthly_date: ""
     };
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
@@ -103,11 +103,11 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
 
     const response = await fetch(`${baseUrl}/clients/${clientId}`, {
       method: 'PUT',
-      credentials: 'include', 
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(finalFormData), 
+      body: JSON.stringify(finalFormData),
     });
     if (response.ok) {
       toast.success("Cliente atualizado com sucesso!")
@@ -126,17 +126,21 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
     }
   };
 
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setFormData(prev => ({ ...prev, monthly_date: value }));
+  };
+
   useEffect(() => {
     if (isOpen) {
       const fetchClient = async () => {
         try {
-
           const baseUrl = process.env.NEXT_PUBLIC_APP_PORT
             ? `${process.env.NEXT_PUBLIC_APP_URL}:${process.env.NEXT_PUBLIC_APP_PORT}`
             : process.env.NEXT_PUBLIC_APP_URL;
 
           const response = await fetch(`${baseUrl}/clients/${clientId}`, {
-            credentials: 'include', 
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
             },
@@ -149,10 +153,13 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
           const complementValue = data.complement.Valid ? data.complement.String : "";
           const landmarkValue = data.landmark.Valid ? data.landmark.String : "";
 
+          const defaultMonthlyDate = data.is_monthly ? new Date(data.monthly_date.Time).toISOString().split('T')[0] : "";
+
           setFormData({
             ...data,
-            complement: complementValue, 
-            landmark: landmarkValue, 
+            complement: complementValue,
+            landmark: landmarkValue,
+            monthly_date: defaultMonthlyDate,
           });
 
           const clientStateOption = stateOptions.find(option => option.value === data.state) ?? null;
@@ -162,9 +169,10 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
         }
       };
       setIsClosing(false);
-      fetchClient()
+      fetchClient();
     }
   }, [isOpen, clientId, updateTrigger]);
+
 
   if (!isOpen) {
     return null;
@@ -235,8 +243,20 @@ const UpdateClientModal: React.FC<ClientsProps> = ({ isOpen, clientId, onClose, 
             </div>
             <div>
               <label htmlFor="is_monthly">Mensal:</label>
-              <input type="checkbox" id="is_monthly" name="is_monthly" onChange={handleChange} />
+              <input
+                type="checkbox"
+                id="is_monthly"
+                name="is_monthly"
+                checked={formData.is_monthly}
+                onChange={handleChange}
+              />
             </div>
+            {formData.is_monthly && (
+              <div>
+                <label htmlFor="monthly_date">Data Mensal:</label>
+                <input type="date" id="monthly_date" name="monthly_date" onChange={handleDateChange} value={formData.monthly_date} />
+              </div>
+            )}
             <button type="submit" className={styles.registerClientButton}>Atualizar cliente</button>
           </form>
         </div>
