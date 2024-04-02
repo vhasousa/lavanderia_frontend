@@ -117,7 +117,10 @@ export const HeroContainer = styled.section`
     }
 
     .hero__image {
-      width: 256px;
+      grid-area: b;
+      justify-self: end;
+      width: 30%;
+      height: auto;
     }
   }
 
